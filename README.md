@@ -1,2 +1,4 @@
-# swh_code
-This repository save the codes from local_code and mycode
+
+# local_code
+This repository save code which be run on laptop
+>>>>>>> 446fdc3 (Initial commit)
