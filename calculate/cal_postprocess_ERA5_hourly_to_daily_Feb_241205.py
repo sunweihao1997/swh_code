@@ -1,12 +1,14 @@
 '''
 2024-11-23
 This script is to do postprocess of the downloaded hourly ERA5 data
+
+This new script is for the February
 '''
 import xarray as xr
 import numpy as np
 import os
 
-path_in = '/home/sun/mydown/ERA5/era5_psl_hourly/'
+path_in = '/home/sun/mydown/ERA5/era5_psl_hourly/Feb/'
 path_out = '/home/sun/mydown/ERA5/era5_psl_u10_v10_daily/'
 
 file_list = os.listdir(path_in)
@@ -29,4 +31,6 @@ for ff in file_list_nc:
 
     f1 = f0.resample(valid_time='24H').mean(dim='valid_time')
 
-    f1.to_netcdf(path_out + str(date) + '.nc')
+    f1['msl'].attrs = f0['msl'].attrs
+
+    f1.to_netcdf(path_out + str(date) + '_Feb.nc')

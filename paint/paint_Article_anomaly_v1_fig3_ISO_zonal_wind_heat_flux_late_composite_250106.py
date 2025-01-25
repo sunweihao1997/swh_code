@@ -117,10 +117,10 @@ def main():
     ax3.bar(np.linspace(55, 90, 36),             u_series1 - u_series0, bar_width, color='brown',  zorder=1, alpha=0.8)
     ax3.bar(np.linspace(55, 90, 36) + bar_width, u_series2 - u_series1, bar_width, color='grey',zorder=2, alpha=0.5)
 
-    ax1.tick_params(axis='y', colors='red',  labelsize=20)
-    ax1.tick_params(axis='x', colors='k',    labelsize=20)
-    ax2.tick_params(axis='y', colors='blue', labelsize=20)
-    ax3.tick_params(axis='y', colors='k' ,   labelsize=20)
+    ax1.tick_params(axis='y', colors='red',  labelsize=25)
+    ax1.tick_params(axis='x', colors='k',    labelsize=25)
+    ax2.tick_params(axis='y', colors='blue', labelsize=25)
+    ax3.tick_params(axis='y', colors='k' ,   labelsize=25)
 
     ax2.spines['right'].set_color('blue')
     ax1.spines['left'].set_color('red')

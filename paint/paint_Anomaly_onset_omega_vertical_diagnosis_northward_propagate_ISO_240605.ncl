@@ -5,7 +5,7 @@ begin
 
 ; ================= File Information ===============
 
-file0  =  addfile("/home/sun/data/monsoon_onset_anomaly_analysis/process/ERA5_monsoon_onset_climate_early_late_pressure_variables_composite_average_monthly.nc", "r")
+file0  =  addfile("/home/sun/data/monsoon_onset_anomaly_analysis/process/ERA5_monsoon_onset_climate_early_late_pressure_variables_composite_average_monthly_new.nc", "r")
 
 var0_climate   =  file0->w_climate(:, {200:1000}, :, {80:100})
 var0_early     =  file0->w_early(:, {200:1000}, :, {80:100})

@@ -123,6 +123,9 @@ def main():
 
     ax2.spines['right'].set_color('blue')
     ax1.spines['left'].set_color('red')
+
+    ax1.set_xticks([55, 60, 65, 70, 75, 80, 85, 90],)
+    ax1.set_xticklabels(["55E", "60E", "65E", "70E", "75E", "80E", "85E", "90E"],)
 #    plt.gca().spines['left'].set_color('red')
 #    plt.gca().spines['right'].set_color('blue')
 

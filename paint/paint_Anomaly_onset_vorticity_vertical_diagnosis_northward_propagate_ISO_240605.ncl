@@ -5,7 +5,7 @@ begin
 
 ; ================= File Information ===============
 
-file0  =  addfile("/home/sun/data/monsoon_onset_anomaly_analysis/process/ERA5_monsoon_onset_climate_early_late_pressure_variables_composite_average_monthly.nc", "r")
+file0  =  addfile("/home/sun/data/monsoon_onset_anomaly_analysis/process/ERA5_monsoon_onset_climate_early_late_pressure_variables_composite_average_monthly_new.nc", "r")
 
 varu_climate   =  file0->u_climate(:, {200:1000}, :, {80:100})
 varu_early     =  file0->u_early(:, {200:1000}, :, {80:100})
@@ -56,7 +56,7 @@ copy_VarCoords(dim_avg_n_Wrap(varu_climate(mon_num, :, :, :), 2), diff_late)
 
 ; plot the picture
 ;wks = gsn_open_wks("pdf","/home/sun/paint/monsoon_onset_composite_ERA5/vertical_meridional_April_vor_ERA5_BOB_early")
-wks = gsn_open_wks("pdf","/home/sun/paint/phd/vertical_meridional_March_vor_ERA5_BOB_early")
+wks = gsn_open_wks("pdf","/home/sun/paint/phd/vertical_meridional_March_vor_ERA5_BOB_late")
 
 res                      = True                 ; plot mods desired
 
@@ -72,7 +72,7 @@ res@cnLineLabelsOn       = False                 ; turn on line labels
 res@cnFillOn             = True                 ; turn on color fill
 res@cnFillPalette        = "cmocean_balance"             ; choose colormap
 
-plot = gsn_csm_pres_hgt(wks,diff_early, res)         ; create plot    
+plot = gsn_csm_pres_hgt(wks,diff_late, res)         ; create plot    
 
 ;  print(plot)
 ;  print(plot@contour)

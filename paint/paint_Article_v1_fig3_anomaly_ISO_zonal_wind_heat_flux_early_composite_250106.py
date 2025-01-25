@@ -66,29 +66,25 @@ def main():
     slhf_e = xr.open_dataset(path1 + f_slhf[1]).sel(time=slice(-30, 9), lat=slice(5, 0), lon=slice(55, 90))
     slhf_l = xr.open_dataset(path1 + f_slhf[2]).sel(time=slice(-30, 9), lat=slice(5, 0), lon=slice(55, 90))
 
-    print("3edition")
     # band-pass OLR
     olr_f  = xr.open_dataset("/home/sun/data/composite/early_late_composite/ERA5_OLR_bandpass_early_late_composite.nc").sel(lat=slice(15, 5), lon=slice(70, 90))
 
     #print(uwind_e)
     #print(np.average(np.average(uwind_e['u10'], axis=1), axis=1))
-    u_series0  = np.sqrt((np.average(np.average(uwind_l['u10'].data[3 :10], axis=0), axis=0))**2 +  (np.average(np.average(vwind_l['v10'].data[3 :10], axis=0), axis=0))**2)
-    u_series1  = np.sqrt((np.average(np.average(uwind_l['u10'].data[10:20], axis=0), axis=0))**2 +  (np.average(np.average(vwind_l['v10'].data[10:20], axis=0), axis=0))**2)
-    u_series2  = np.sqrt((np.average(np.average(uwind_l['u10'].data[20:30], axis=0), axis=0))**2 +  (np.average(np.average(vwind_l['v10'].data[20:30], axis=0), axis=0))**2)
+    u_series0  = np.sqrt((np.average(np.average(uwind_e['u10'].data[0 :10], axis=0), axis=0))**2 +  (np.average(np.average(vwind_e['v10'].data[0 :10], axis=0), axis=0))**2)
+    u_series1  = np.sqrt((np.average(np.average(uwind_e['u10'].data[10:20], axis=0), axis=0))**2 +  (np.average(np.average(vwind_e['v10'].data[10:20], axis=0), axis=0))**2)
+    u_series2  = np.sqrt((np.average(np.average(uwind_e['u10'].data[20:30], axis=0), axis=0))**2 +  (np.average(np.average(vwind_e['v10'].data[20:30], axis=0), axis=0))**2)
 #    u_series0[u_series0<0] = 0
 #    u_series1[u_series1<0] = 0
 
-    sf_series0 = np.average(np.average(sshf_l['sshf'][0:8]/-86400*24, axis=0), axis=0)
-    sf_series1 = np.average(np.average(sshf_l['sshf'][12:20]/-86400*24, axis=0), axis=0)
-    sf_series2 = np.average(np.average(sshf_l['sshf'][22:30]/-86400*24, axis=0), axis=0)
-    sf_series0[17:30] -= 0.5
-    sf_series0*=0.9
+    sf_series0 = np.average(np.average(sshf_e['sshf'][0:8]/-86400*24, axis=0), axis=0)
+    sf_series1 = np.average(np.average(sshf_e['sshf'][12:20]/-86400*24, axis=0), axis=0)
+    sf_series2 = np.average(np.average(sshf_e['sshf'][22:30]/-86400*24, axis=0), axis=0)
+#    sf_series0[17:30] -= 0.5
 
-
-    sl_series0 = np.average(np.average(slhf_l['slhf'][0:8]/-86400*24, axis=0), axis=0)
-    sl_series1 = np.average(np.average(slhf_l['slhf'][12:20]/-86400*24, axis=0), axis=0)
-    sl_series2 = np.average(np.average(slhf_l['slhf'][22:30]/-86400*24, axis=0), axis=0)
-    sl_series0*=0.9
+    sl_series0 = np.average(np.average(slhf_e['slhf'][0:8]/-86400*24, axis=0), axis=0)
+    sl_series1 = np.average(np.average(slhf_e['slhf'][12:20]/-86400*24, axis=0), axis=0)
+    sl_series2 = np.average(np.average(slhf_e['slhf'][22:30]/-86400*24, axis=0), axis=0)
 #    lf_series = np.average(np.average(slhf_e['slhf']/-86400*24, axis=1), axis=1)
 #    p_series = np.average(np.average(olr_f['olr_early']*86400*24, axis=1), axis=1)
 #    print(lf_series)
@@ -117,16 +113,16 @@ def main():
     ax3.bar(np.linspace(55, 90, 36),             u_series1 - u_series0, bar_width, color='brown',  zorder=1, alpha=0.8)
     ax3.bar(np.linspace(55, 90, 36) + bar_width, u_series2 - u_series1, bar_width, color='grey',zorder=2, alpha=0.5)
 
-    ax1.tick_params(axis='y', colors='red',  labelsize=20)
-    ax1.tick_params(axis='x', colors='k',    labelsize=20)
-    ax2.tick_params(axis='y', colors='blue', labelsize=20)
-    ax3.tick_params(axis='y', colors='k' ,   labelsize=20)
-
-    ax2.spines['right'].set_color('blue')
-    ax1.spines['left'].set_color('red')
+    ax1.tick_params(axis='y', colors='red',  labelsize=25)
+    ax1.tick_params(axis='x', colors='k',    labelsize=25)
+    ax2.tick_params(axis='y', colors='blue', labelsize=25)
+    ax3.tick_params(axis='y', colors='k' ,   labelsize=25)
 
     ax1.set_xticks([55, 60, 65, 70, 75, 80, 85, 90],)
     ax1.set_xticklabels(["55E", "60E", "65E", "70E", "75E", "80E", "85E", "90E"],)
+
+    ax2.spines['right'].set_color('blue')
+    ax1.spines['left'].set_color('red')
 #    plt.gca().spines['left'].set_color('red')
 #    plt.gca().spines['right'].set_color('blue')
 
@@ -135,7 +131,7 @@ def main():
 #    ax3.plot(sl_series2,      color='b', marker='*', lw=2.3, markersize=15, alpha=0.5)
     ax3.set_ylim((0, 3))
 
-    plt.savefig('/home/sun/paint/monsoon_onset_composite_ERA5/Article_Anomaly_ISO_fig3_zonal_wind_heat_flux_late.pdf')
+    plt.savefig('/home/sun/paint/monsoon_onset_composite_ERA5/Article_Anomaly_ISO_fig3_zonal_wind_heat_flux_early.pdf')
 
 
 if __name__ == '__main__':

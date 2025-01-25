@@ -5,7 +5,7 @@ begin
 
 ; ================= File Information ===============
 
-file0  =  addfile("/home/sun/data/monsoon_onset_anomaly_analysis/process/ERA5_monsoon_onset_climate_early_late_pressure_variables_composite_average_monthly.nc", "r")
+file0  =  addfile("/home/sun/data/monsoon_onset_anomaly_analysis/process/ERA5_monsoon_onset_climate_early_late_pressure_variables_composite_average_monthly_new.nc", "r")
 
 varu_climate   =  file0->u_climate(:, {200:1000}, :, {80:100})
 varu_early     =  file0->u_early(:, {200:1000}, :, {80:100})
@@ -56,7 +56,7 @@ copy_VarCoords(dim_avg_n_Wrap(varu_climate(mon_num, :, :, :), 2), diff_late)
 
 ; plot the picture
 ;wks = gsn_open_wks("pdf","/home/sun/paint/phd/phd_c5_fig6_vertical_meridional_April_div_ERA5_BOB_early")
-wks = gsn_open_wks("pdf","/home/sun/paint/phd/phd_c5_fig6_vertical_meridional_April_div_ERA5_BOB_late")
+wks = gsn_open_wks("pdf","/home/sun/paint/phd/phd_c5_fig6_vertical_meridional_April_div_ERA5_BOB_late_new")
 
 res                      = True                 ; plot mods desired
 
