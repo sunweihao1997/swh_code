@@ -12,7 +12,7 @@ def cal_moving_average(x, w):
 
 # ================= 1. Prepare the file ===================
 # 1. LSTC series
-f_lstc = xr.open_dataset("/home/sun/data/monsoon_onset_anomaly_analysis/ERA5_data_monsoon_onset/ERA5_msl_land_sea_contrast_feb_may_daily.nc")
+f_lstc = xr.open_dataset("/home/sun/data/monsoon_onset_anomaly_analysis/ERA5_data_monsoon_onset/ERA5_msl_land_sea_contrast_feb_may_daily_10degree.nc")
 
 early_mean = f_lstc['early_msl'].data ; late_mean = f_lstc['late_msl'].data ; climate_mean = f_lstc['climate_msl'].data 
 # 1.1 calculate the std
@@ -20,9 +20,9 @@ early_std = np.std(f_lstc.early_msl_all.data, axis=0) ; late_std = np.std(f_lstc
 
 # 2. BOB-CEF
 v_path = "/home/sun/data/monsoon_onset_anomaly_analysis/ERA5_data_monsoon_onset/climatic_daily_ERA5/single/"
-climate_vfile = xr.open_dataset(v_path + "10m_v_component_of_wind_climatic_daily.nc").sel(lat=slice(5, -5), lon=slice(75, 85))
-early_vfile   = xr.open_dataset(v_path + "10m_v_component_of_wind_climatic_daily_year_early.nc").sel(lat=slice(5, -5), lon=slice(75, 85))
-late_vfile    = xr.open_dataset(v_path + "10m_v_component_of_wind_climatic_daily_year_late.nc").sel(lat=slice(5, -5), lon=slice(75, 85))
+climate_vfile = xr.open_dataset(v_path + "10m_v_component_of_wind_climatic_daily.nc").sel(lat=slice(5, -5), lon=slice(75, 90))
+early_vfile   = xr.open_dataset(v_path + "10m_v_component_of_wind_climatic_daily_year_early.nc").sel(lat=slice(5, -5), lon=slice(75, 90))
+late_vfile    = xr.open_dataset(v_path + "10m_v_component_of_wind_climatic_daily_year_late.nc").sel(lat=slice(5, -5), lon=slice(75, 90))
 #sys.exit()
 
 early_meanv = np.zeros((365)) ; climate_meanv = np.zeros((365)) ; late_meanv = np.zeros((365))
@@ -73,7 +73,7 @@ ax.set_xticks(np.array([20, 29, 39, 49, 60, 70, 80, 90, 100, 110]))
 ax.set_xticklabels(["20-Feb", "1-March", "10-March", "20-March", "1-April", "10-April", "20-April", "1-May", "10-May", "20-May"], rotation=30)
 
 ax.set_xlim((10, 115))
-ax.set_ylim((-1500, 1500))
+ax.set_ylim((-500, 500))
 
 ax2  =  ax.twinx()
 

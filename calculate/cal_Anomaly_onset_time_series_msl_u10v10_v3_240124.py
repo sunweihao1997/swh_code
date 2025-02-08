@@ -24,7 +24,7 @@ late_years  = date_file.year_late.data
 file_path   = "/home/sun/mydown/ERA5/era5_psl_u10_v10_daily/"
 
 # =========================== First Part. Deal with sea level pressure ========================
-def land_sea_msl_contrast(f0, mask, land_range=[0, 20, 70, 90], ocean_range=[60, 90, -10, 10]):
+def land_sea_msl_contrast(f0, mask, land_range=[0, 20, 70, 90], ocean_range=[-20, 20, 40, 100]):
     '''
         This function calculate the land sea contrast using msl
     '''
@@ -102,7 +102,7 @@ for yyyy in range(1980, 2022): # 42 years
     climate_msl += series0[:28]/42
 
 climate_msl_fmam[:28]      = climate_msl
-climate_msl_all_fmam[:28]  = climate_msl_all
+climate_msl_all_fmam[:, :28]  = climate_msl_all
 early_msl_fmam[:28]        = early_msl
 late_msl_fmam[:28]         = late_msl
 early_msl_all_fmam[:, :28] = early_msl_all

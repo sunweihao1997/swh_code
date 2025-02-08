@@ -22,8 +22,8 @@ def partial_corr(A, B, C):
 #    partial_corr_coefficient = np.corrcoef(A, B_residuals)[0, 1]
     a, b = pearsonr(A, B_residuals)
 
-    print(a)
-    print(b)
+    #print(a)
+    #print(b)
     
     return a
 
@@ -38,10 +38,10 @@ onset_day_file = xr.open_dataset("/home/sun/data/monsoon_onset_anomaly_analysis/
 onset_day_file_42 = onset_day_file.sel(year=slice(1980, 2021)) #42 years
 
 #print(onset_day_file_42)
-correlation_coefficient, p_value = pearsonr(onset_day_file_42['onset_day'], f0_April['LSTC_sp_IOB'])
+correlation_coefficient, p_value = pearsonr(onset_day_file_42['onset_day'], f0_April['LSTC_psl_IOB'])
 
 print(correlation_coefficient)
 
 #partial_corr(onset_day_file_42['onset_day'], f0_April['OLR_mari_Afri'], f0_April['LSTC_psl_IOB'])
-partial_corr(onset_day_file_42['onset_day'], f0_April['LSTC_sp_IOB'], f0_April['OLR_mari_Afri'], )
+partial_corr(onset_day_file_42['onset_day'], f0_April['LSTC_psl_IOB'], f0_April['OLR_mari_Afri'], )
 #print(a)
