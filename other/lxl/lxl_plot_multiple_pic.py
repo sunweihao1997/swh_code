@@ -24,7 +24,7 @@ def plot_multiple_pic(datasets_name, date_name, file_name, var_name, title_left,
     fig, axs = plt.subplots(figsize=(30, 10))
 
     #axs.plot(np.linspace(0, 71, 72), ws10m[0:72, 1], color='red', linewidth=3)
-    axs.plot(np.linspace(0, 71, 72), ws10m[0:72], linewidth=1.5)
+    axs.plot(np.linspace(0, 71, 72), ws10m[0:72], linewidth=2.5)
 
     # Set the attribution for axis
     axs.set_xticks(range(0, 71, 4))
@@ -38,9 +38,9 @@ def plot_multiple_pic(datasets_name, date_name, file_name, var_name, title_left,
     axs.set_title(title_right, loc='right', fontsize=25)
 
     #plt.savefig('/home/sun/paint/lxl_paint/{}.png'.format(pic_name))
-    plt.savefig('{}.png'.format(pic_name))
+    plt.savefig('{}.pdf'.format(pic_name))
     
-datasets_name = ['CMA', 'IFS', 'GFS', 'SD3']
+datasets_name = ['CMA', 'IFS', 'SD3', 'GFS']
 #datasets_name = ['CMA']
 
 #path1         = path + datasets_name[0] + '/'
