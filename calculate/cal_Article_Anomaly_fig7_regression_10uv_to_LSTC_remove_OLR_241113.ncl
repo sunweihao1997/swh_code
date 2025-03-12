@@ -18,7 +18,9 @@ begin
     lstc_remove        = f1->LSTC_psl_IOB
     olr                = f1->OLR_mari_Afri
 
+    ;print(lstc_remove)
 
+    
     ; remove the LSTC signal
     regh1=new(1,"float",0)
     tval1=new(1,"float",0)
@@ -30,6 +32,8 @@ begin
     lstc_remove_olr = lstc_remove - (b1 * olr + a1)
 
     lstc_remove_olr_standardize = dim_standardize(lstc_remove_olr, 1)
+    print(lstc_remove_olr_standardize)
+    exit
 
     ; Calculates and removes the mean of the given dimension(s) at all other dimensions.
     lstc_abnormal = dim_rmvmean_n_Wrap(lstc_remove_olr, 0)

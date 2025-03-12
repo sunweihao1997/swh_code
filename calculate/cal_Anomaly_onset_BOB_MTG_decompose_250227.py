@@ -123,6 +123,8 @@ ax.fill_between(np.linspace(-1*interval, 1*interval, 2*interval), np.average(ncf
 ax.set_ylim((-1.5, 1.5))
 ax.set_xlim((-1*interval+3, 1*interval-3))
 
+ax.legend(loc='upper left')
+
 #ax.set_xticks([90, 100, 110, 120, 130, 140, 150])
 ax.set_yticks([-1.5, -1, -0.5, 0, 0.5, 1, 1.5])
 #ax.set_xticklabels(["1-April", "10-April", "20-April", "1-May", "10-May", "20-May", "31-May"])
@@ -151,6 +153,8 @@ ax.fill_between(np.linspace(-1*interval, 1*interval, 2*interval), np.average(ncf
 ax.set_ylim((-1.5, 1.5))
 ax.set_xlim((-1*interval+3, 1*interval-3))
 
+ax.legend(loc='upper left')
+
 #ax.set_xticks([90, 100, 110, 120, 130, 140, 150])
 ax.set_yticks([-1.5, -1, -0.5, 0, 0.5, 1, 1.5])
 #ax.set_xticklabels(["1-April", "10-April", "20-April", "1-May", "10-May", "20-May", "31-May"])
@@ -177,7 +181,9 @@ ax.plot([-1*interval, 1*interval], [0, 0], 'k--', lw=0.75)
 ax.fill_between(np.linspace(-1*interval, 1*interval, 2*interval), np.average(ncfile_lat['bandpass_MTG'].data, axis=0)[start_time:end_time] - 0.75*np.std(ncfile_lat['bandpass_MTG'].data, axis=0)[start_time:end_time], np.average(ncfile_lat['bandpass_MTG'].data, axis=0)[start_time:end_time] + 0.75*np.std(ncfile_lat['bandpass_MTG'].data, axis=0)[start_time:end_time], alpha=0.2, color='red')
 
 ax.set_ylim((-1.5, 1.5))
-ax.set_xlim((-1*interval+2, 1*interval-2))
+ax.set_xlim((-1*interval+3, 1*interval-3))
+
+ax.legend(loc='upper left')
 
 #ax.set_xticks([90, 100, 110, 120, 130, 140, 150])
 ax.set_yticks([-1.5, -1, -0.5, 0, 0.5, 1, 1.5])
@@ -187,3 +193,9 @@ ax.tick_params(axis='y', labelsize=17.5, labelcolor='k')
 
 
 plt.savefig('/home/sun/paint/monsoon_onset_composite_ERA5/Article_Anomaly_ISO_v2_fig1_decomposed_mtg_late_onset.pdf')
+
+# Added function: calculating the contribution 
+print(np.average(ncfile_lat['original_MTG'].data, axis=0)[avg_time-5-3:avg_time+5-3])
+print(np.average(ncfile_lat['highpass_MTG'].data, axis=0)[avg_time-5-3:avg_time+5-3])
+print(np.average(ncfile_lat['bandpass_MTG'].data, axis=0)[avg_time-5-3:avg_time+5-3])
+print(np.average(ncfile_lat['lowpass_MTG'].data, axis=0)[avg_time-5-3:avg_time+5-3])
