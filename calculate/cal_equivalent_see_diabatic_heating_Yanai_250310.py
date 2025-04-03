@@ -38,6 +38,7 @@ def cal_heating(t, u, v, p, w):
 
     dlon   = np.gradient(file_test['longitude'].data) * (np.pi / 180) * radium * np.cos(np.radians(file_test['latitude'].data[:, np.newaxis]))
 
+    #print(np.gradient(theta, axis=2).shape)
     grad_lat = np.gradient(theta, axis=2) / dlat[np.newaxis, np.newaxis, :, np.newaxis]
 
     grad_lon = np.gradient(theta, axis=3) / dlon[np.newaxis, np.newaxis, :, :]
@@ -45,11 +46,12 @@ def cal_heating(t, u, v, p, w):
     advection_term = (u * grad_lon + v * grad_lat)
 
     # vertical term
-    grad_p   = np.gradient(theta, axis=1) / np.gradient(plev)[:, np.newaxis, np.newaxis]
+    #grad_p   = np.gradient(theta, axis=1) / np.gradient(plev)[:, np.newaxis, np.newaxis]
+    grad_p   = np.gradient(theta, plev, axis=1)
 
     vertical_term = w / 100 * grad_p
 
-    return cp * pow((expand_plev/p0), kappa) * (dtheta_dt + advection_term + vertical_term)
+    return cp * pow((expand_plev/p0), kappa) * (dtheta_dt + advection_term + vertical_term), cp * pow((expand_plev/p0), kappa) * dtheta_dt, cp * pow((expand_plev/p0), kappa) * advection_term, cp * pow((expand_plev/p0), kappa) * vertical_term 
 
 # ========== Start calculating =================
 path0 = "/home/sun/mydown/ERA5/monthly_pressure/"
@@ -61,11 +63,14 @@ print(len(file_list))
 for ffff in file_list[40:]:
     f1 = xr.open_dataset(path0 + ffff) ; print(f"Now it is dealing with {ffff}")
 
-    diabatic_heating = cal_heating(f1["t"].data, f1["u"].data, f1["v"].data, plev, f1["w"].data)
+    diabatic_heating, time_term, advection_term, vertical_term = cal_heating(f1["t"].data, f1["u"].data, f1["v"].data, plev, f1["w"].data)
 
     ncfile  =  xr.Dataset(
         {
             "diabatic_heating": (["time", "level", "latitude", "longitude"], diabatic_heating),
+            "time_term":        (["time", "level", "latitude", "longitude"], time_term),
+            "advection_term":   (["time", "level", "latitude", "longitude"], advection_term),
+            "vertical_term":    (["time", "level", "latitude", "longitude"], vertical_term),
         },
         coords={
             "time": (["time"], file_test['time'].data),

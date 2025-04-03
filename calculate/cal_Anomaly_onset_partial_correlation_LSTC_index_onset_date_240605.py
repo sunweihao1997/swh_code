@@ -29,6 +29,7 @@ def partial_corr(A, B, C):
 
 f0 = xr.open_dataset("/home/sun/data/monsoon_onset_anomaly_analysis/process/ERA5_LSTC_1980_2021_t2m_ts_sp_psl_OLR.nc")
 
+f0_Feb   = f0.sel(time=f0.time.dt.month.isin([2]))
 f0_March = f0.sel(time=f0.time.dt.month.isin([3]))
 f0_April = f0.sel(time=f0.time.dt.month.isin([4]))
 #print(f0_March)
@@ -38,7 +39,7 @@ onset_day_file = xr.open_dataset("/home/sun/data/monsoon_onset_anomaly_analysis/
 onset_day_file_42 = onset_day_file.sel(year=slice(1980, 2021)) #42 years
 
 #print(onset_day_file_42)
-correlation_coefficient, p_value = pearsonr(onset_day_file_42['onset_day'], f0_April['LSTC_psl_IOB'])
+correlation_coefficient, p_value = pearsonr(onset_day_file_42['onset_day'], 0.3*(f0_April['LSTC_psl_IOB'].data+f0_March['LSTC_psl_IOB'].data+f0_Feb['LSTC_psl_IOB'].data))
 
 print(correlation_coefficient)
 

@@ -195,7 +195,7 @@ ax.tick_params(axis='y', labelsize=17.5, labelcolor='k')
 plt.savefig('/home/sun/paint/monsoon_onset_composite_ERA5/Article_Anomaly_ISO_v2_fig1_decomposed_mtg_late_onset.pdf')
 
 # Added function: calculating the contribution 
-print(np.average(ncfile_lat['original_MTG'].data, axis=0)[avg_time-5-3:avg_time+5-3])
-print(np.average(ncfile_lat['highpass_MTG'].data, axis=0)[avg_time-5-3:avg_time+5-3])
-print(np.average(ncfile_lat['bandpass_MTG'].data, axis=0)[avg_time-5-3:avg_time+5-3])
-print(np.average(ncfile_lat['lowpass_MTG'].data, axis=0)[avg_time-5-3:avg_time+5-3])
+print(np.average(ncfile_lat['original_MTG'].data, axis=0)[avg_time-5-3:avg_time+5-3]) # 0.67
+print(np.average(ncfile_lat['highpass_MTG'].data, axis=0)[avg_time-5-3:avg_time+5-3]) # 0.08
+print(np.average(ncfile_lat['bandpass_MTG'].data, axis=0)[avg_time-5-3:avg_time+5-3]) # 0.35
+print(np.average(ncfile_lat['lowpass_MTG'].data, axis=0)[avg_time-5-3:avg_time+5-3])  # 0.24
