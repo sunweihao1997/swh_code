@@ -13,6 +13,7 @@ import cartopy.crs as ccrs
 import matplotlib.pyplot as plt
 import sys
 import cartopy
+import matplotlib.patches as patches
 
 sys.path.append("/home/sun/swh_code/module/")
 from module_sun import *
@@ -63,8 +64,13 @@ def paint_12month_correlation(correlation, extent, lon, lat, title):
             im2 = ax.contourf(lons, lat, data, [-1, -0.3, 0, 0.3, 1], hatches=['..', None, None, '..'], colors="none", transform=ccrs.PlateCarree())
             ax.coastlines()
             
+            # add region block
+            points_maritime = (110, -5)
 
-            ax.plot([0,360],[0,0],'k--',linewidth=0.5,transform = ccrs.PlateCarree())
+            rect_maritime = patches.Rectangle(points_maritime, 20, 20, linewidth=2.25, edgecolor='grey', facecolor='none', transform=ccrs.PlateCarree())
+            ax.add_patch(rect_maritime)
+
+            #ax.plot([0,360],[0,0],'k--',linewidth=0.5,transform = ccrs.PlateCarree())
            # ax.plot([30,330],[10,10],'r--',transform = ccrs.PlateCarree())
 
             ax.set_title(month_name[j], loc='right', fontsize=16)
@@ -79,7 +85,7 @@ def paint_12month_correlation(correlation, extent, lon, lat, title):
     cb  =  fig1.colorbar(im, cax=cbar_ax, shrink=0.1, pad=0.01, orientation='horizontal')
     cb.ax.tick_params(labelsize=15)
 
-    save_fig(path_out="/home/sun/paint/",file_out="phd_c5_v0_fig12_correlation_onsetdates_OLR.pdf")
+    save_fig(path_out="/home/sun/paint/CD/",file_out="Anomaly_Onset_v1_fig9_correlation_onsetdates_with_OLR.pdf")
 
 def main():
     lonmin,lonmax,latmin,latmax  =  40,150,30,-10
