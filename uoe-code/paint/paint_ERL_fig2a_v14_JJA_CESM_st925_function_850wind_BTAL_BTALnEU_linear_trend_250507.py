@@ -34,8 +34,10 @@ file_path = '/home/sun/data/download_data/data/analysis_data/analysis_EU_aerosol
 
 psl_btal    = xr.open_dataset(file_path + 'BTAL_SLP_jja_mean_241211.nc')
 psl_btalneu = xr.open_dataset(file_path + 'noEU_SLP_jja_mean_241211.nc')
-sf          = xr.open_dataset(file_path + 'Aerosol_Research_CESM_BTAL_BTALnEU_925hPa_streamfunction_velocity_potential.nc')
-#print(psl_btal)
+sf          = xr.open_dataset("/home/sun/wd_14/data/data/download_data/data/analysis_data/analysis_EU_aerosol_climate_effect/cesm_allf_fixEU_str925_trend_jja.nc")
+#print(sf)
+#
+#exit()
 
 # ------------------- Wind data ---------------------------------
 file_path = "/home/sun/data/download_data/data/model_data/ensemble_JJA_corrected/"
@@ -46,6 +48,8 @@ u_btal      = xr.open_dataset(file_path + 'CESM_BTAL_JJA_U_ensemble.nc').sel(lev
 v_btal      = xr.open_dataset(file_path + 'CESM_BTAL_JJA_V_ensemble.nc').sel(lev=sel_level)
 u_btalneu   = xr.open_dataset(file_path + 'CESM_BTALnEU_JJA_U_ensemble.nc').sel(lev=sel_level)
 v_btalneu   = xr.open_dataset(file_path + 'CESM_BTALnEU_JJA_V_ensemble.nc').sel(lev=sel_level)
+
+ref_850 = xr.open_dataset(file_path + 'CESM_BTAL_JJA_U_ensemble.nc').sel(lev=850)
 
 # ------------------- Lat/Lon -----------------------------------
 
@@ -85,11 +89,15 @@ u_con = (calculate_linear_trend(p1, p2, u_btal, 'JJA_U_1') + calculate_linear_tr
 v_con = (calculate_linear_trend(p1, p2, v_btal, 'JJA_V_1') + calculate_linear_trend(p1, p2, v_btal, 'JJA_V_2') + calculate_linear_trend(p1, p2, v_btal, 'JJA_V_3') + calculate_linear_trend(p1, p2, v_btal, 'JJA_V_4') + calculate_linear_trend(p1, p2, v_btal, 'JJA_V_5') + calculate_linear_trend(p1, p2, v_btal, 'JJA_V_6') + calculate_linear_trend(p1, p2, v_btal, 'JJA_V_7') + calculate_linear_trend(p1, p2, v_btal, 'JJA_V_8'))/8
 u_neu = (calculate_linear_trend(p1, p2, u_btalneu, 'JJA_U_1') +calculate_linear_trend(p1, p2, u_btalneu, 'JJA_U_2') + calculate_linear_trend(p1, p2, u_btalneu, 'JJA_U_3') + calculate_linear_trend(p1, p2, u_btalneu, 'JJA_U_4') + calculate_linear_trend(p1, p2, u_btalneu, 'JJA_U_5') + calculate_linear_trend(p1, p2, u_btalneu, 'JJA_U_6') + calculate_linear_trend(p1, p2, u_btalneu, 'JJA_U_7') + calculate_linear_trend(p1, p2, u_btalneu, 'JJA_U_8'))/8
 v_neu = (calculate_linear_trend(p1, p2, v_btalneu, 'JJA_V_1') +calculate_linear_trend(p1, p2, v_btalneu, 'JJA_V_2') + calculate_linear_trend(p1, p2, v_btalneu, 'JJA_V_3') + calculate_linear_trend(p1, p2, v_btalneu, 'JJA_V_4') + calculate_linear_trend(p1, p2, v_btalneu, 'JJA_V_5') + calculate_linear_trend(p1, p2, v_btalneu, 'JJA_V_6') + calculate_linear_trend(p1, p2, v_btalneu, 'JJA_V_7') + calculate_linear_trend(p1, p2, v_btalneu, 'JJA_V_8'))/8
-psl_con= calculate_linear_trend(p1, p2, sf,    'btal_sf')
-psl_neu= calculate_linear_trend(p1, p2, sf, 'btalneu_sf')
+#psl_con= calculate_linear_trend(p1, p2, sf,    'btal_sf')
+#psl_neu= calculate_linear_trend(p1, p2, sf, 'btalneu_sf')
 
-print(np.nanmean(psl_con))
-sys.exit()
+#psl_diff = psl_con - psl_neu
+##psl_diff[np.isnan(ref_850['JJA_U_2'].data[5])] = np.nan
+#psl_diff -= np.average(psl_diff, axis=1, keepdims=True)
+
+#print(np.nanmean(psl_con))
+#sys.exit("Succeed")
 
 # ===================== END for function cal_period_difference ============================
 
@@ -131,7 +139,8 @@ def plot_diff_slp_wind(diff_slp, diff_u, diff_v, left_title, right_title, out_pa
 
     # Shading for SLP difference
     norm = BoundaryNorm(level, ncolors=256, clip=True)
-    im  =  ax.contourf(lon, lat, diff_slp, levels=levels, cmap=newcmp, alpha=1, extend='both', norm=norm)
+    im  =  ax.contourf(lon, lat, diff_slp, levels=level, cmap=newcmp, alpha=1, extend='both', norm=norm)
+    #im  =  ax.contourf(lon, lat, diff_slp, cmap=newcmp, alpha=1, extend='both', norm=norm)
     
     # Vectors for Wind difference
     q  =  ax.quiver(lon, lat, diff_u, diff_v, 
@@ -173,13 +182,22 @@ def main():
     out_path  = "/home/sun/paint/ERL/"
     level1    =  np.array([-70, -60, -50, -40, -30, -25, -20, -15, -10, -5, 0, 5, 10, 15, 20, 25, 30, 40, 50, 60, 70,])
     level2    =  np.array([-28, -24, -20, -16, -12, -8,-4,0, 4, 8, 12, 16, 20, 24, 28], dtype=int)
-    level2    =  np.array([-6, -3, -1, -0.5, -0.3, -0.2, -0.1, -0.05, 0.05, 0.1, 0.2, 0.3, 0.5, 1, 3, 6])
+    level2    =  np.array([-1.5, -1, -0.8, -0.6, -0.4, -0.2,  0.2, 0.4, 0.6, 0.8, 1, 1.5], dtype=float)
+    level2    =  np.linspace(-0.5, 0.5, 11)
+    level2   =  np.array([-0.4, -0.2, -0.1, -0.05, -0.03, -0.01, 0.01, 0.03, 0.05, 0.1, 0.2, 0.4], dtype=float)
+    #sf['stfdiff'].data = sf['stfdiff'].data - np.average(sf['stfdiff'].data, axis=2, keepdims=True)
+    #print(sf['stfdiff'].data[2].shape)
 #    plot_diff_slp_wind(diff_slp=data_file["psl_btal_diff"],    diff_u=data_file["u_btal_diff"], diff_v=data_file["v_btal_diff"] , left_title='BTAL', right_title='JJA', out_path=out_path, pic_name="Aerosol_research_ERL_2a_BTAL.pdf", p=data_file['psl_btal_diffp'], level=level1)
 #    plot_diff_slp_wind(diff_slp=data_file["psl_btalneu_diff"], diff_u=data_file["u_btalneu_diff"], diff_v=data_file["v_btalneu_diff"] , left_title='BTALnEU', right_title='JJA', out_path=out_path, pic_name="Aerosol_research_ERL_2a_BTALnEU.pdf", p=data_file['psl_btalneu_diffp'], level=level1)
 #    plot_diff_slp_wind(diff_slp=data_file["psl_btal_btalneu_diff"],    diff_u=data_file["u_btal_btalneu_diff"], diff_v=data_file["v_btal_btalneu_diff"] , left_title='(a)', right_title='BTAL - BTALnEU', out_path=out_path, pic_name="Aerosol_research_ERL_2a_BTAL_BTALnEU.pdf", p=data_file['psl_btal_btalneu_diffp'], level=level2)
 #    level2    =  np.array([-5, -4.5, -4, -3.5, -3, -2.5, -2, -1.5, -1, -0.5, 0.5, 1, 1.5, 2, 2.5, 3, 3.5, 4, 4.5, 5])
-    plot_diff_slp_wind(diff_slp=5.5*gaussian_filter((psl_con - psl_neu), sigma=1), diff_u=(u_con - u_neu)*55, diff_v=(v_con - v_neu)*55,  left_title='(a)', right_title='CESM_ALL - CESM_noEU', out_path=out_path, pic_name="ERL_fig2a_v10_CESM_slp_850wind_diff_JJA_linear_trend_1901to1955_test.pdf", level=level2)
-    print('Finished')
+    stdiff = sf['stfdiff'].data[1].copy()
+    #for i in range(stdiff.shape[0]):
+    #    for j in range(stdiff.shape[1]):
+    #        stdiff[i, j] = stdiff[i, j] - np.nanmean(stdiff[i])
+    #print(zonal_diff.shape)
+    plot_diff_slp_wind(diff_slp=stdiff, diff_u=(u_con - u_neu)*55, diff_v=(v_con - v_neu)*55,  left_title='(a)', right_title='CESM_ALL - CESM_noEU', out_path=out_path, pic_name="ERL_fig2a_v14_CESM_st850_850wind_diff_JJA_linear_trend_1901to1955.pdf", level=level2)
+    #print('Finished')
 
 if __name__ == '__main__':
     main()

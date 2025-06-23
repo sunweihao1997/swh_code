@@ -26,7 +26,7 @@ from scipy.ndimage import gaussian_filter
 from matplotlib import cm
 from matplotlib.colors import ListedColormap
 
-sys.path.append('/home/sun/uoe-code/module/')
+sys.path.append('/home/sun/swh_code/uoe-code/module/')
 from module_sun import set_cartopy_tick
 from module_sun import check_path, add_vector_legend
 
@@ -115,13 +115,13 @@ add_vector_legend(ax=ax[1], q=q, speed=5)
 
 # --- Coast Line ---
 ax[1].coastlines(resolution='110m', lw=1.5)
-ax[1].add_feature(cfeature.BORDERS, linewidth=1., edgecolor='red')
+ax[1].add_feature(cfeature.BORDERS, linewidth=1., edgecolor='black')
 
 # Using China Map
-from cartopy.io.shapereader import Reader
-reader = Reader("/home/sun/data/download_data/shp_file/country/country.shp") #国界
-china_country= cfeature.ShapelyFeature(reader.geometries(), ccrs.PlateCarree(), edgecolor='black', facecolor='none') 
-ax[1].add_feature(china_country, linewidth=1, edgecolor='green') 
+#from cartopy.io.shapereader import Reader
+#reader = Reader("/home/sun/data/download_data/shp_file/country/country.shp") #国界
+#china_country= cfeature.ShapelyFeature(reader.geometries(), ccrs.PlateCarree(), edgecolor='black', facecolor='none') 
+#ax[1].add_feature(china_country, linewidth=1, edgecolor='black') 
 
 # ------ CESM - ERA5 Poltting ---------
 # --- Tick setting ---
@@ -142,6 +142,7 @@ add_vector_legend(ax=ax[2], q=q, speed=5)
 
 # --- Coast Line ---
 ax[2].coastlines(resolution='110m', lw=1.5)
+ax[2].add_feature(cfeature.BORDERS, linewidth=1., edgecolor='black')
 
 # ========= add colorbar =================
 fig.subplots_adjust(top=0.8) 
@@ -150,4 +151,4 @@ cb  =  fig.colorbar(im3, cax=cbar_ax, shrink=0.5, pad=0.01, orientation='horizon
 #cb.ax.set_xticks(levels)
 cb.ax.tick_params(labelsize=25)
 
-plt.savefig("/home/sun/paint/ERL/ERL_figs1_v4_model_evaluation_850wind_pr_cb2.pdf")
+plt.savefig("/home/sun/paint/ERL/ERL_figs1_v5_model_evaluation_850wind_pr_cb2_chinamap.pdf")

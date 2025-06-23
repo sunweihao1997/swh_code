@@ -34,18 +34,21 @@ file_path = '/home/sun/data/download_data/data/analysis_data/analysis_EU_aerosol
 
 psl_btal    = xr.open_dataset(file_path + 'BTAL_SLP_jja_mean_241211.nc')
 psl_btalneu = xr.open_dataset(file_path + 'noEU_SLP_jja_mean_241211.nc')
-sf          = xr.open_dataset(file_path + 'Aerosol_Research_CESM_BTAL_BTALnEU_925hPa_streamfunction_velocity_potential.nc')
 #print(psl_btal)
 
 # ------------------- Wind data ---------------------------------
 file_path = "/home/sun/data/download_data/data/model_data/ensemble_JJA_corrected/"
 
-sel_level   = 850
+sel_level   = 925
 
 u_btal      = xr.open_dataset(file_path + 'CESM_BTAL_JJA_U_ensemble.nc').sel(lev=sel_level)
 v_btal      = xr.open_dataset(file_path + 'CESM_BTAL_JJA_V_ensemble.nc').sel(lev=sel_level)
 u_btalneu   = xr.open_dataset(file_path + 'CESM_BTALnEU_JJA_U_ensemble.nc').sel(lev=sel_level)
 v_btalneu   = xr.open_dataset(file_path + 'CESM_BTALnEU_JJA_V_ensemble.nc').sel(lev=sel_level)
+
+#print(u_btal)
+#print(u_btal['JJA_U_1'].data[5, :, 50])
+#sys.exit()
 
 # ------------------- Lat/Lon -----------------------------------
 
@@ -85,11 +88,10 @@ u_con = (calculate_linear_trend(p1, p2, u_btal, 'JJA_U_1') + calculate_linear_tr
 v_con = (calculate_linear_trend(p1, p2, v_btal, 'JJA_V_1') + calculate_linear_trend(p1, p2, v_btal, 'JJA_V_2') + calculate_linear_trend(p1, p2, v_btal, 'JJA_V_3') + calculate_linear_trend(p1, p2, v_btal, 'JJA_V_4') + calculate_linear_trend(p1, p2, v_btal, 'JJA_V_5') + calculate_linear_trend(p1, p2, v_btal, 'JJA_V_6') + calculate_linear_trend(p1, p2, v_btal, 'JJA_V_7') + calculate_linear_trend(p1, p2, v_btal, 'JJA_V_8'))/8
 u_neu = (calculate_linear_trend(p1, p2, u_btalneu, 'JJA_U_1') +calculate_linear_trend(p1, p2, u_btalneu, 'JJA_U_2') + calculate_linear_trend(p1, p2, u_btalneu, 'JJA_U_3') + calculate_linear_trend(p1, p2, u_btalneu, 'JJA_U_4') + calculate_linear_trend(p1, p2, u_btalneu, 'JJA_U_5') + calculate_linear_trend(p1, p2, u_btalneu, 'JJA_U_6') + calculate_linear_trend(p1, p2, u_btalneu, 'JJA_U_7') + calculate_linear_trend(p1, p2, u_btalneu, 'JJA_U_8'))/8
 v_neu = (calculate_linear_trend(p1, p2, v_btalneu, 'JJA_V_1') +calculate_linear_trend(p1, p2, v_btalneu, 'JJA_V_2') + calculate_linear_trend(p1, p2, v_btalneu, 'JJA_V_3') + calculate_linear_trend(p1, p2, v_btalneu, 'JJA_V_4') + calculate_linear_trend(p1, p2, v_btalneu, 'JJA_V_5') + calculate_linear_trend(p1, p2, v_btalneu, 'JJA_V_6') + calculate_linear_trend(p1, p2, v_btalneu, 'JJA_V_7') + calculate_linear_trend(p1, p2, v_btalneu, 'JJA_V_8'))/8
-psl_con= calculate_linear_trend(p1, p2, sf,    'btal_sf')
-psl_neu= calculate_linear_trend(p1, p2, sf, 'btalneu_sf')
+psl_con= calculate_linear_trend(p1, p2, psl_btal,    'SLP_JJA')
+psl_neu= calculate_linear_trend(p1, p2, psl_btalneu, 'SLP_JJA')
 
-print(np.nanmean(psl_con))
-sys.exit()
+print(np.nanmean(u_con))
 
 # ===================== END for function cal_period_difference ============================
 
