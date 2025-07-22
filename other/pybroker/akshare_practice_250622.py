@@ -58,7 +58,7 @@ def check_stock_MA(code: str, name: str, pe: float, start_date: str, end_date: s
     # Start calculating the Technical Indicators
     df['MA5']  = df['收盘'].rolling(window=5).mean()
     df['MA20'] = df['收盘'].rolling(window=20).mean()
-    df['MA60'] = df['收盘'].rolling(window=60).mean()
+    df['MA60'] = df['收盘'].rolling(window=55).mean()
     df['obv']  = ta.obv(close=df["收盘"], volume=df["成交量"])
     ma15_now = df['收盘'].iloc[-15:].mean()
     price_max = df['收盘'].max()

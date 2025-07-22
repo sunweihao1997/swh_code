@@ -20,7 +20,8 @@ import cartopy.feature as cfeature
 from matplotlib.colors import BoundaryNorm
 
 
-sys.path.append('/home/sun/uoe-code/module/')
+
+sys.path.append('/home/sun/swh_code/uoe-code/module/')
 from module_sun import set_cartopy_tick
 from module_sun import check_path, add_vector_legend
 
@@ -30,7 +31,7 @@ from module_sun import check_path, add_vector_legend
 
 file_path = '/home/sun/data/download_data/data/Supplement_Data_send_by_Massimo/'
 
-file_var    = xr.open_dataset(file_path + 'cesm_allf_fixEU_dswsc_trend_jja.nc')
+file_var    = xr.open_dataset(file_path + 'cesm_allf_fixEU_fns_trend_jja.nc')
 #print(psl_btal)
 
 
@@ -162,7 +163,7 @@ def plot_diff_slp_wind(diff_slp, left_title, right_title, out_path, pic_name, le
 
 
     # --- Set range ---
-    lonmin,lonmax,latmin,latmax  =  -15, 50, 40, 70
+    lonmin,lonmax,latmin,latmax  =  -15, 50, 35, 75
     extent     =  [lonmin,lonmax,latmin,latmax]
 
     # --- Tick setting ---
@@ -199,6 +200,7 @@ def plot_diff_slp_wind(diff_slp, left_title, right_title, out_path, pic_name, le
     cb  =  fig.colorbar(im, shrink=0.75, pad=0.1, orientation='horizontal', ticks=levels.astype(int))
     cb.ax.tick_params(labelsize=12)
 
+
     plt.savefig(out_path + pic_name)
 
 
@@ -211,11 +213,11 @@ def main():
     level1    =  np.array([-70, -60, -50, -40, -30, -25, -20, -15, -10, -5, 0, 5, 10, 15, 20, 25, 30, 40, 50, 60, 70,])
     level2    =  np.array([-28, -24, -20, -16, -12, -8,-4,0, 4, 8, 12, 16, 20, 24, 28], dtype=int)
     #level2    =  np.array([-0.5, -0.4, -0.3, -0.2, -0.1, -0.05, 0.05, 0.1, 0.2, 0.3, 0.4, 0.5])
-    level2 = np.array([-5, -2, -1.5, -1.2, -1, -0.8, -0.6, -0.4, -0.2, 0.2, 0.4, 0.6, 0.8, 1, 1.2, 1.5, 2, 5])*1e1
+    level2 = np.array([-30, -25, -20, -15, -10, -8, -6, -4, -2, 2, 4, 6, 8, 10, 15, 20, 25, 30])
 #    plot_diff_slp_wind(diff_slp=data_file["psl_btal_diff"],    diff_u=data_file["u_btal_diff"], diff_v=data_file["v_btal_diff"] , left_title='BTAL', right_title='JJAS', out_path=out_path, pic_name="Aerosol_research_ERL_2a_BTAL.pdf", p=data_file['psl_btal_diffp'], level=level1)
 #    plot_diff_slp_wind(diff_slp=data_file["psl_btalneu_diff"], diff_u=data_file["u_btalneu_diff"], diff_v=data_file["v_btalneu_diff"] , left_title='BTALnEU', right_title='JJAS', out_path=out_path, pic_name="Aerosol_research_ERL_2a_BTALnEU.pdf", p=data_file['psl_btalneu_diffp'], level=level1)
 #    plot_diff_slp_wind(diff_slp=data_file["psl_btal_btalneu_diff"],    diff_u=data_file["u_btal_btalneu_diff"], diff_v=data_file["v_btal_btalneu_diff"] , left_title='(a)', right_title='BTAL - BTALnEU', out_path=out_path, pic_name="Aerosol_research_ERL_2a_BTAL_BTALnEU.pdf", p=data_file['psl_btal_btalneu_diffp'], level=level2)
-    plot_diff_slp_wind(diff_slp=gaussian_filter(file_var['pa'].data, sigma=1.), left_title='1901-1955 Linear Trend', right_title='dswsc', out_path=out_path, pic_name="ERL_figSnew_JJA_BTAL_BTALnEU_dswsc_linear_trend.pdf", level=level2, pvalue=None)
+    plot_diff_slp_wind(diff_slp=gaussian_filter(file_var['pa'].data, sigma=1), left_title='1901-1955 Linear Trend', right_title='fns', out_path=out_path, pic_name="ERL_figSnew_JJA_BTAL_BTALnEU_fns_linear_trend.pdf", level=level2, pvalue=None)
 #    plot_diff_slp_wind(diff_slp=1e1*gaussian_filter((psl_con), sigma=0.5),          left_title='1901-1955 Linear Trend', right_title='CESM_ALL', out_path=out_path,             pic_name="Aerosol_research_ERL_s5a_BTAL_BTALnEU_TS_linear_trend.pdf", level=level2, pvalue=None)
 #    plot_diff_slp_wind(diff_slp=1e1*gaussian_filter((psl_neu), sigma=0.5),          left_title='1901-1955 Linear Trend', right_title='CESM_noEU', out_path=out_path,            pic_name="Aerosol_research_ERL_s5b_BTAL_BTALnEU_TS_linear_trend.pdf", level=level2, pvalue=None)
 
