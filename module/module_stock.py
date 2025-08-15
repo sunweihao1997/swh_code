@@ -37,7 +37,7 @@ def cal_index_for_stock(stock_num, start_date, end_date):
         df['trix_diff'] = df['trix'] - df['trix_signal']
         
         # Calculate RSI
-        df['rsi'] = ta.rsi(df['收盘'], length=14)
+        df['rsi'] = ta.rsi(df['收盘'], length=6)
 
         #additional indicators
         # ------------ 1.  recent 10 days slope for CCI ------------------
