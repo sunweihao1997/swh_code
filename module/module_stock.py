@@ -98,6 +98,98 @@ def cal_index_for_stock(stock_num, start_date, end_date):
     
         return df
 
+def cal_index_for_stock_hk(stock_num, start_date, end_date):
+    """
+    Calculate technical indicators for a given stock.
+    """
+    # Get historical data for the stock
+    df = ak.stock_hk_hist(symbol=stock_num, period="daily", start_date=start_date, end_date=end_date, adjust="qfq")
+    if len(df) < 365:
+        return None
+    else:
+        df.to_excel(f"/home/sun/data/other/stock_price_single_hk/{stock_num}.xlsx", index=False)
+        
+        # Calculate CCI
+        df['CCI'] = ta.cci(high=df['最高'], low=df['最低'], close=df['收盘'], length=14)
+        
+        # Calculate MACD
+        #print(df['收盘'])
+        macd = ta.macd(df['收盘'])
+        df = pd.concat([df, macd], axis=1)
+        
+        # Calculate OBV
+        #print(df[['收盘', '成交量']].head(40))
+        df['OBV'] = ta.obv(close=df['收盘'], volume=df['成交量'])
+        df['OBVM30'] = df['OBV'].rolling(window=30).mean()
+    
+        # Calculate TRIX
+        df['trix'] = ta.trix(df['收盘'], length=12).iloc[:, 0]
+    
+        df['trix_signal'] = df['trix'].rolling(window=9).mean()
+        df['trix_diff'] = df['trix'] - df['trix_signal']
+        
+        # Calculate RSI
+        df['rsi'] = ta.rsi(df['收盘'], length=6)
+
+        #additional indicators
+        # ------------ 1.  recent 10 days slope for CCI ------------------
+        #print(df['CCI'].tail(10))
+        df['CCI_slope'] = df['CCI'].rolling(window=10).apply(
+            lambda x: LinearRegression().fit(np.arange(len(x)).reshape(-1, 1), x).coef_[0],
+            raw=True
+        )
+        df['CCI_slope20'] = df['CCI'].rolling(window=20).apply(
+            lambda x: LinearRegression().fit(np.arange(len(x)).reshape(-1, 1), x).coef_[0],
+            raw=True
+        )
+        #print(df['CCI_slope'].tail(10)) # Have checked and results are correct
+
+        # ------------ 2.  recent ratio of positive CCI among past 14 days -----------------
+        N_window = 10 ; threshold_cci = 0.6
+        cci_pos = (df['CCI'] > 0).astype(int) ; cci_neg = (df['CCI'] < 0).astype(int)
+        cci_pos_ratio = cci_pos.rolling(window=N_window).sum() / N_window
+
+        # ------------ 3.  Slope of OBV index -----------------------
+        df['OBV_slope'] = df['OBV'].rolling(window=7).apply(
+            lambda x: LinearRegression().fit(np.arange(len(x)).reshape(-1, 1), x).coef_[0],
+            raw=True
+        )
+        df['OBV_slope20'] = df['OBV'].rolling(window=20).apply(
+            lambda x: LinearRegression().fit(np.arange(len(x)).reshape(-1, 1), x).coef_[0],
+            raw=True
+        )
+        # ------------ 4.  Ratio inwhich OBV larger than OBV30; using 10 days -----------------
+        df['OBV_M30']   = df['OBV'].rolling(window=30).mean()
+        obv_pos           = ((df['OBV'] - df['OBV_M30']) > 0).astype(int)
+        obv_pos_ratio = obv_pos.rolling(window=10).sum() / 10
+        df['OBV_ratio'] = obv_pos_ratio
+        #print(obv_pos_ratio)
+
+        # ------------ 5. Slope of DIFF_MACD ------------
+        df['macd_diff_slope'] = df['MACDh_12_26_9'].rolling(window=5).apply(
+            lambda x: LinearRegression().fit(np.arange(len(x)).reshape(-1, 1), x).coef_[0],
+            raw=True
+        )
+        df['macd_diff_slope20'] = df['MACDh_12_26_9'].rolling(window=20).apply(
+            lambda x: LinearRegression().fit(np.arange(len(x)).reshape(-1, 1), x).coef_[0],
+            raw=True
+        )
+        # ------------ 6. Slope of MA60 --------------
+        df['MA60'] = df['收盘'].rolling(window=55).mean()
+        df['MA60_slope'] = df['MA60'].rolling(window=3).apply(
+            lambda x: LinearRegression().fit(np.arange(len(x)).reshape(-1, 1), x).coef_[0],
+            raw=True
+        )
+
+        # ------------ 6. Slope of trix-diff --------------
+        df['trix_diff_slope'] = df['trix_diff'].rolling(window=5).apply(
+            lambda x: LinearRegression().fit(np.arange(len(x)).reshape(-1, 1), x).coef_[0],
+            raw=True
+        )
+    
+    
+        return df
+
 
 def standardize_and_normalize(df):
     """

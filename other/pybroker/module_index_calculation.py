@@ -30,6 +30,11 @@ def cal_base_index(code, start_date, end_date):
         raw=True
     )
 
+    df_a['CCI_slope5'] = df_a['CCI'].rolling(window=5).apply(
+        lambda x: LinearRegression().fit(np.arange(len(x)).reshape(-1, 1), x).coef_[0],
+        raw=True
+    )
+
     # 3. Ratio of the positive CCI in recent 7 days
     N_window = 7
     cci_pos = (df_a['CCI'] > 0).astype(int) ; cci_neg = (df_a['CCI'] < 0).astype(int)
