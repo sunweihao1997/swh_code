@@ -27,7 +27,7 @@ today_str = datetime.today().strftime("%Y%m%d")
 spot_df = pd.read_excel(f"/home/sun/wd_14/data/data/other/stock_percentile/52week_percentile_output_{today_str}.xlsx", dtype={"代码": str})
 
 # Drop the stock that are above 50% in past 52 weeks
-spot_df = spot_df[spot_df['52周百分位'] < 50]
+spot_df = spot_df[spot_df['52周百分位'] < 61.8]
 
 print(f"Total stocks after filtering: {len(spot_df)}")
 
