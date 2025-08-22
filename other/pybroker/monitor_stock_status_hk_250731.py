@@ -21,7 +21,16 @@ start_date = (datetime.today() - timedelta(days=365*5)).strftime("%Y%m%d")
 
 # =============== Screening Stocks ===============
 
-spot_df = pd.read_excel("/home/sun/wd_14/data/data/other/stock_percentile/52week_percentile_output_20250806.xlsx", dtype={"代码": str})
+#stock_hk_spot_em_df = ak.stock_hk_main_board_spot_em()
+#
+#stock_hk_spot_em_df.to_excel("/home/sun/data/other/real_time_hk_250731.xlsx", index=False)
+
+df = ak.stock_hk_spot()
+df.to_excel("/home/sun/data/other/test.xlsx", index=False)
+
+
+exit()
+spot_df = pd.read_excel("/home/sun/data/other/real_time_250710.xlsx", dtype={"代码": str})
 
 columns = spot_df.columns.tolist()
 

@@ -1,6 +1,8 @@
 '''
-2025-7-29
-This script is to monitor stock status and calculate indicators for them.
+2025-8-6
+This script monitors the stock status for a given stock symbol.
+1. Detect the upward crossing of the MA60
+2. Detect the Buying signal
 '''
 import akshare as ak
 import pandas as pd
@@ -21,20 +23,13 @@ start_date = (datetime.today() - timedelta(days=365*5)).strftime("%Y%m%d")
 
 # =============== Screening Stocks ===============
 
-spot_df = pd.read_excel("/home/sun/wd_14/data/data/other/stock_percentile/52week_percentile_output_20250806.xlsx", dtype={"代码": str})
+today_str = datetime.today().strftime("%Y%m%d")
+spot_df = pd.read_excel(f"/home/sun/wd_14/data/data/other/stock_percentile/52week_percentile_output_{today_str}.xlsx", dtype={"代码": str})
 
-columns = spot_df.columns.tolist()
+# Drop the stock that are above 50% in past 52 weeks
+spot_df = spot_df[spot_df['52周百分位'] < 50]
 
-# 自动识别市盈率列名
-pe_candidates = ["市盈率-动态", "市盈率(动)", "市盈率", "市盈率_TTM", "总市值"]
-pe_col = next((col for col in pe_candidates if col in columns), None)
-
-# 把市盈率数据拉出来然后清除小于0的
-spot_df = spot_df[["代码", "名称", "总市值", pe_col]].dropna()
-spot_df = spot_df[(spot_df[pe_col] > 0) & (spot_df[pe_col] < 70)]
-
-# 筛选出来100e市值以上的
-spot_df = spot_df[spot_df['总市值'] > 5e10]
+print(f"Total stocks after filtering: {len(spot_df)}")
 
 # 1. Upward cross of MA60
 meetm60_code = [] ; meetm60_name = []
@@ -73,7 +68,7 @@ for index, row in spot_df.iterrows():
         meetrsi_code.append(code)
         meetrsi_name.append(name)
 
-    if testa['CCI_slope10'].iloc[-1] > 0.0:
+    if testa['CCI_slope5'].iloc[-1] > 0.0:
         print(f"CCI signal detected for {code} - {name}")
         meetcci_code.append(code)
         meetcci_name.append(name)
