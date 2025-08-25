@@ -11,7 +11,7 @@ import sys
 import os
 import numpy as np
 
-sys.path.append("/home/sun/swh_code/module/")
+sys.path.append("/home/ubuntu/swh_code/module/")
 from module_stock import cal_index_for_stock, standardize_and_normalize, map_df
 
 

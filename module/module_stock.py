@@ -15,7 +15,7 @@ def cal_index_for_stock(stock_num, start_date, end_date):
     if len(df) < 365:
         return None
     else:
-        df.to_excel(f"/home/sun/data/other/stock_price_single/{stock_num}.xlsx", index=False)
+        df.to_excel(f"/home/ubuntu/stock_data/stock_price_single/{stock_num}.xlsx", index=False)
         
         # Calculate CCI
         df['CCI'] = ta.cci(high=df['最高'], low=df['最低'], close=df['收盘'], length=14)
@@ -107,7 +107,7 @@ def cal_index_for_stock_hk(stock_num, start_date, end_date):
     if len(df) < 365:
         return None
     else:
-        df.to_excel(f"/home/sun/data/other/stock_price_single_hk/{stock_num}.xlsx", index=False)
+        df.to_excel(f"/home/ubuntu/stock_data/stock_price_single_hk/{stock_num}.xlsx", index=False)
         
         # Calculate CCI
         df['CCI'] = ta.cci(high=df['最高'], low=df['最低'], close=df['收盘'], length=14)
