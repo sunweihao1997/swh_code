@@ -10,6 +10,7 @@ import chardet
 from datetime import datetime
 import pytz
 import re
+from zoneinfo import ZoneInfo
 
 path_ship = "/mnt/f/ERA5_ship/ERA5_ship_addtime/"
 #print(os.listdir(path_ship))
@@ -74,16 +75,26 @@ def ERA5_interpolation(csv_file):
 
             time_compose = datetime.strptime(f"{year}-{month:02d}-{day:02d} {hour:02d}:00", "%Y-%m-%d %H:%M")
 
+            time_beijing = time_compose.replace(tzinfo=ZoneInfo("Asia/Shanghai"))
+
+            time_utc = time_beijing.astimezone(ZoneInfo("UTC"))
+
+            utc_year  = time_utc.year
+            utc_month = time_utc.month
+
+            #print(time_compose) ; print(time_utc)
+
             #print(time_compose)
 
             #print(f"Processing time: {year}-{month:02d}-{day:02d} {hour:02d}:00")
             # Generate the filenames
-            file_name_10u = f"ERA5_hourly_single.0.5x0.5.10m_u_component_of_wind.{year}{month:02d}.nc"
-            file_name_10v = f"ERA5_hourly_single.0.5x0.5.10m_v_component_of_wind.{year}{month:02d}.nc"
-            file_name_2t  = f"ERA5_hourly_single.0.5x0.5.2m_temperature.{year}{month:02d}.nc"
-            file_name_2d  = f"ERA5_hourly_single.0.5x0.5.2m_dewpoint_temperature.{year}{month:02d}.nc"
-            file_name_msl = f"ERA5_hourly_single.0.5x0.5.mean_sea_level_pressure.{year}{month:02d}.nc"
-            file_name_sp  = f"ERA5_hourly_single.0.5x0.5.surface_pressure.{year}{month:02d}.nc"
+            file_name_10u = f"ERA5_hourly_single.0.5x0.5.10m_u_component_of_wind.{utc_year}{utc_month:02d}.nc"
+            file_name_10v = f"ERA5_hourly_single.0.5x0.5.10m_v_component_of_wind.{utc_year}{utc_month:02d}.nc"
+            file_name_2t  = f"ERA5_hourly_single.0.5x0.5.2m_temperature.{utc_year}{utc_month:02d}.nc"
+            file_name_2d  = f"ERA5_hourly_single.0.5x0.5.2m_dewpoint_temperature.{utc_year}{utc_month:02d}.nc"
+            file_name_msl = f"ERA5_hourly_single.0.5x0.5.mean_sea_level_pressure.{utc_year}{utc_month:02d}.nc"
+            file_name_sp  = f"ERA5_hourly_single.0.5x0.5.surface_pressure.{utc_year}{utc_month:02d}.nc"
+            #print(file_name_10u)
 
             file_name_list = [file_name_10u, file_name_10v, file_name_2t, file_name_2d, file_name_msl, file_name_sp]
             vars_list      = [u10, v10, t2, td2, msl, sp]
@@ -91,7 +102,8 @@ def ERA5_interpolation(csv_file):
             for num in np.arange(len(file_name_list)):
                 
                 # Check the same time
-                f_single_var = xr.open_dataset(os.path.join(ERA5_path, file_name_list[num])).sel(valid_time=time_compose)
+                f_single_var = xr.open_dataset(os.path.join(ERA5_path, file_name_list[num])).sel(valid_time=time_utc.replace(tzinfo=None))
+                
 
                 f_single_var_interp = f_single_var.interp(latitude=lat, longitude=lon, method="linear")
 
@@ -115,7 +127,7 @@ def ERA5_interpolation(csv_file):
     return csv_file
 
 
-outpath = "/mnt/f/ERA5_ship/add_ERA5_interpolation/"
+outpath = "/mnt/f/ERA5_ship/add_ERA5_interpolation_beijing_time/"
 
 for fff in file_list:
     print(f"Processing file: {fff}")

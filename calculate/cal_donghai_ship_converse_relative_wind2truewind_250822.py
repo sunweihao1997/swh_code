@@ -13,7 +13,7 @@ from datetime import datetime
 import pytz
 import re
 
-path_data = "/mnt/f/ERA5_ship/add_ERA5_interpolation/"
+path_data = "/mnt/f/ERA5_ship/add_ERA5_interpolation_beijing_time/"
 list_file = os.listdir(path_data)
 
 # exclude other data

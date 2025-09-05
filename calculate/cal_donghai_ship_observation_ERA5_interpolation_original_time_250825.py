@@ -22,27 +22,6 @@ test_file = pd.read_csv(path_ship + "202506_3E7246.csv", encoding='gb2312')
 #
 #print(test_file.iloc[5]['年'])
 
-
-def calc_rh(t2, td2):
-    """
-    t2  : 2米气温 (单位 K 或 °C)
-    td2 : 2米露点温度 (单位 K 或 °C)
-    返回: 相对湿度 RH (%)
-    """
-    # 如果是开尔文，转成摄氏
-    if np.nanmedian(t2) > 200:
-        t2 = t2 - 273.15
-    if np.nanmedian(td2) > 200:
-        td2 = td2 - 273.15
-
-    # 饱和水汽压 (hPa)
-    es = 6.112 * np.exp((17.67 * t2) / (t2 + 243.5))
-    # 实际水汽压 (hPa)
-    e = 6.112 * np.exp((17.67 * td2) / (td2 + 243.5))
-
-    rh = (e / es) * 100
-    return np.clip(rh, 0, 100)  # 限制在 0-100 %
-
 # =========== Function to return the target file ============
 def ERA5_interpolation(csv_file):
     '''
@@ -92,37 +71,34 @@ def ERA5_interpolation(csv_file):
                 
                 # Check the same time
                 f_single_var = xr.open_dataset(os.path.join(ERA5_path, file_name_list[num])).sel(valid_time=time_compose)
+                #print(f_single_var)
 
                 f_single_var_interp = f_single_var.interp(latitude=lat, longitude=lon, method="linear")
 
                 # Add the interpolated value to the list
                 vars_list[num].append(f_single_var_interp[vars_name_list[num]].values.item())
+                print(f_single_var_interp[vars_name_list[num]].values.item())
                 #print(ftest_interp)
 
                 #print(f"Processing file: {file_name}")
             
     # Save the results to the csv file
+    #print(u10)
     csv_file['ERA5_10m_u_component_of_wind'] = u10
     csv_file['ERA5_10m_v_component_of_wind'] = v10
     csv_file['ERA5_2m_temperature']          = t2
     csv_file['ERA5_2m_dewpoint_temperature'] = td2
     csv_file['ERA5_mean_sea_level_pressure'] = msl
     csv_file['ERA5_surface_pressure']        = sp
-    csv_file['ERA5_wind_speed']              = (csv_file['ERA5_10m_u_component_of_wind']**2 + csv_file['ERA5_10m_v_component_of_wind']**2)**0.5
-    csv_file['ERA5_wind_direction']          = (270 - np.degrees(np.arctan2(v10, u10))) % 360
-    csv_file['ERA5_relative_humidity'] = calc_rh(csv_file['ERA5_2m_temperature'],csv_file['ERA5_2m_dewpoint_temperature'])
 
     return csv_file
 
 
-outpath = "/mnt/f/ERA5_ship/add_ERA5_interpolation/"
+outpath = "/mnt/f/ERA5_ship/test_path/"
 
-for fff in file_list:
-    print(f"Processing file: {fff}")
-    if not fff.endswith('.csv'):
-        continue
+
     
-    input_file = pd.read_csv(path_ship + fff, encoding='gb2312')
+input_file = pd.read_csv(path_ship + "202506_9V8112.csv", encoding='gb2312')
 
-    output_file = ERA5_interpolation(input_file)
-    output_file.to_csv(os.path.join(outpath, fff), index=False, encoding='gb2312')
+output_file = ERA5_interpolation(input_file)
+output_file.to_csv(os.path.join(outpath, "202506_9V8112.csv"), index=False, encoding='gb2312')

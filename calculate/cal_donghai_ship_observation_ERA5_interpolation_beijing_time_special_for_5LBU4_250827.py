@@ -1,6 +1,8 @@
 '''
-2025-8-18
+2025-8-27
 This script is used to combine the ship observation data and ERA5 data(by interpolation).
+
+Special for 5LBU4, since it has many NAN values
 '''
 import numpy as np
 import pandas as pd
@@ -10,6 +12,7 @@ import chardet
 from datetime import datetime
 import pytz
 import re
+from zoneinfo import ZoneInfo
 
 path_ship = "/mnt/f/ERA5_ship/ERA5_ship_addtime/"
 #print(os.listdir(path_ship))
@@ -58,9 +61,14 @@ def ERA5_interpolation(csv_file):
     # Results Values
     u10 = [] ; v10 = [] ; t2 = [] ; td2 = [] ; msl = [] ; sp = []
 
+    row_num = 0
     for row in csv_file.itertuples():
+        row_num += 1
+    
         # 检查每一行是否含有 NaN
         if any(pd.isna(value) for value in row[1:]):  # row[1:] 是去掉索引部分的行数据
+            print(f"row: {row_num} / {len(csv_file)} is empty",)
+
             u10.append(np.nan) ; v10.append(np.nan) ; t2.append(np.nan) ; td2.append(np.nan) ; msl.append(np.nan) ; sp.append(np.nan)
             continue
         else:
@@ -74,16 +82,26 @@ def ERA5_interpolation(csv_file):
 
             time_compose = datetime.strptime(f"{year}-{month:02d}-{day:02d} {hour:02d}:00", "%Y-%m-%d %H:%M")
 
+            time_beijing = time_compose.replace(tzinfo=ZoneInfo("Asia/Shanghai"))
+
+            time_utc = time_beijing.astimezone(ZoneInfo("UTC"))
+
+            utc_year  = time_utc.year
+            utc_month = time_utc.month
+
+            #print(time_compose) ; print(time_utc)
+
             #print(time_compose)
 
             #print(f"Processing time: {year}-{month:02d}-{day:02d} {hour:02d}:00")
             # Generate the filenames
-            file_name_10u = f"ERA5_hourly_single.0.5x0.5.10m_u_component_of_wind.{year}{month:02d}.nc"
-            file_name_10v = f"ERA5_hourly_single.0.5x0.5.10m_v_component_of_wind.{year}{month:02d}.nc"
-            file_name_2t  = f"ERA5_hourly_single.0.5x0.5.2m_temperature.{year}{month:02d}.nc"
-            file_name_2d  = f"ERA5_hourly_single.0.5x0.5.2m_dewpoint_temperature.{year}{month:02d}.nc"
-            file_name_msl = f"ERA5_hourly_single.0.5x0.5.mean_sea_level_pressure.{year}{month:02d}.nc"
-            file_name_sp  = f"ERA5_hourly_single.0.5x0.5.surface_pressure.{year}{month:02d}.nc"
+            file_name_10u = f"ERA5_hourly_single.0.5x0.5.10m_u_component_of_wind.{utc_year}{utc_month:02d}.nc"
+            file_name_10v = f"ERA5_hourly_single.0.5x0.5.10m_v_component_of_wind.{utc_year}{utc_month:02d}.nc"
+            file_name_2t  = f"ERA5_hourly_single.0.5x0.5.2m_temperature.{utc_year}{utc_month:02d}.nc"
+            file_name_2d  = f"ERA5_hourly_single.0.5x0.5.2m_dewpoint_temperature.{utc_year}{utc_month:02d}.nc"
+            file_name_msl = f"ERA5_hourly_single.0.5x0.5.mean_sea_level_pressure.{utc_year}{utc_month:02d}.nc"
+            file_name_sp  = f"ERA5_hourly_single.0.5x0.5.surface_pressure.{utc_year}{utc_month:02d}.nc"
+            #print(file_name_10u)
 
             file_name_list = [file_name_10u, file_name_10v, file_name_2t, file_name_2d, file_name_msl, file_name_sp]
             vars_list      = [u10, v10, t2, td2, msl, sp]
@@ -91,17 +109,20 @@ def ERA5_interpolation(csv_file):
             for num in np.arange(len(file_name_list)):
                 
                 # Check the same time
-                f_single_var = xr.open_dataset(os.path.join(ERA5_path, file_name_list[num])).sel(valid_time=time_compose)
+                f_single_var = xr.open_dataset(os.path.join(ERA5_path, file_name_list[num])).sel(valid_time=time_utc.replace(tzinfo=None))
+                
 
                 f_single_var_interp = f_single_var.interp(latitude=lat, longitude=lon, method="linear")
 
                 # Add the interpolated value to the list
                 vars_list[num].append(f_single_var_interp[vars_name_list[num]].values.item())
+                print(f"row: {row_num} / {len(csv_file)} ; var: {vars_name_list[num]} ; value: {f_single_var_interp[vars_name_list[num]].values.item()}")
                 #print(ftest_interp)
 
                 #print(f"Processing file: {file_name}")
             
     # Save the results to the csv file
+
     csv_file['ERA5_10m_u_component_of_wind'] = u10
     csv_file['ERA5_10m_v_component_of_wind'] = v10
     csv_file['ERA5_2m_temperature']          = t2
@@ -115,14 +136,12 @@ def ERA5_interpolation(csv_file):
     return csv_file
 
 
-outpath = "/mnt/f/ERA5_ship/add_ERA5_interpolation/"
+outpath = "/mnt/f/ERA5_ship/test_path/"
 
-for fff in file_list:
-    print(f"Processing file: {fff}")
-    if not fff.endswith('.csv'):
-        continue
+fff = "202506_5LBU4.csv"
+print(f"Processing file: {fff}")
     
-    input_file = pd.read_csv(path_ship + fff, encoding='gb2312')
+input_file = pd.read_csv(path_ship + fff, encoding='gb2312')
 
-    output_file = ERA5_interpolation(input_file)
-    output_file.to_csv(os.path.join(outpath, fff), index=False, encoding='gb2312')
+output_file = ERA5_interpolation(input_file)
+output_file.to_csv(os.path.join(outpath, fff), index=False, encoding='gb2312')
