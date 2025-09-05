@@ -1,6 +1,8 @@
 '''
-2025-8-18
+2025-8-27
 This script is used to combine the ship observation data and ERA5 data(by interpolation).
+
+This is a complement of the original script, to deal with the negative values
 '''
 import numpy as np
 import pandas as pd
@@ -10,6 +12,7 @@ import chardet
 from datetime import datetime
 import pytz
 import re
+from zoneinfo import ZoneInfo
 
 path_ship = "/mnt/f/ERA5_ship/ERA5_ship_addtime/"
 #print(os.listdir(path_ship))
@@ -51,7 +54,7 @@ def ERA5_interpolation(csv_file):
     ERA5_path = "/mnt/f/ERA5_ship/"
     vars_list = ['surface_pressure', 'mean_sea_level_pressure', '2m_temperature', '2m_dewpoint_temperature', '10m_v_component_of_wind', '10m_u_component_of_wind']
 
-    csv_file = csv_file.rename(columns=lambda x: re.sub(r'\(.*\)', '', x))
+    #csv_file = csv_file.rename(columns=lambda x: re.sub(r'\(.*\)', '', x))
     csv_file = csv_file.drop('皮温', axis=1) # I do not know what PIWEN is, so I drop it.
     csv_file = csv_file.drop('能见度', axis=1) # I do not know what PIWEN is, so I drop it.
 
@@ -72,18 +75,31 @@ def ERA5_interpolation(csv_file):
             lat  = row.纬度
             lon  = row.经度
 
+            if lon < 0:
+                lon = lon + 360
+
             time_compose = datetime.strptime(f"{year}-{month:02d}-{day:02d} {hour:02d}:00", "%Y-%m-%d %H:%M")
+
+            time_beijing = time_compose.replace(tzinfo=ZoneInfo("Asia/Shanghai"))
+
+            time_utc = time_beijing.astimezone(ZoneInfo("UTC"))
+
+            utc_year  = time_utc.year
+            utc_month = time_utc.month
+
+            #print(time_compose) ; print(time_utc)
 
             #print(time_compose)
 
             #print(f"Processing time: {year}-{month:02d}-{day:02d} {hour:02d}:00")
             # Generate the filenames
-            file_name_10u = f"ERA5_hourly_single.0.5x0.5.10m_u_component_of_wind.{year}{month:02d}.nc"
-            file_name_10v = f"ERA5_hourly_single.0.5x0.5.10m_v_component_of_wind.{year}{month:02d}.nc"
-            file_name_2t  = f"ERA5_hourly_single.0.5x0.5.2m_temperature.{year}{month:02d}.nc"
-            file_name_2d  = f"ERA5_hourly_single.0.5x0.5.2m_dewpoint_temperature.{year}{month:02d}.nc"
-            file_name_msl = f"ERA5_hourly_single.0.5x0.5.mean_sea_level_pressure.{year}{month:02d}.nc"
-            file_name_sp  = f"ERA5_hourly_single.0.5x0.5.surface_pressure.{year}{month:02d}.nc"
+            file_name_10u = f"ERA5_hourly_single.0.5x0.5.10m_u_component_of_wind.{utc_year}{utc_month:02d}.nc"
+            file_name_10v = f"ERA5_hourly_single.0.5x0.5.10m_v_component_of_wind.{utc_year}{utc_month:02d}.nc"
+            file_name_2t  = f"ERA5_hourly_single.0.5x0.5.2m_temperature.{utc_year}{utc_month:02d}.nc"
+            file_name_2d  = f"ERA5_hourly_single.0.5x0.5.2m_dewpoint_temperature.{utc_year}{utc_month:02d}.nc"
+            file_name_msl = f"ERA5_hourly_single.0.5x0.5.mean_sea_level_pressure.{utc_year}{utc_month:02d}.nc"
+            file_name_sp  = f"ERA5_hourly_single.0.5x0.5.surface_pressure.{utc_year}{utc_month:02d}.nc"
+            #print(file_name_10u)
 
             file_name_list = [file_name_10u, file_name_10v, file_name_2t, file_name_2d, file_name_msl, file_name_sp]
             vars_list      = [u10, v10, t2, td2, msl, sp]
@@ -91,7 +107,8 @@ def ERA5_interpolation(csv_file):
             for num in np.arange(len(file_name_list)):
                 
                 # Check the same time
-                f_single_var = xr.open_dataset(os.path.join(ERA5_path, file_name_list[num])).sel(valid_time=time_compose)
+                f_single_var = xr.open_dataset(os.path.join(ERA5_path, file_name_list[num])).sel(valid_time=time_utc.replace(tzinfo=None))
+                
 
                 f_single_var_interp = f_single_var.interp(latitude=lat, longitude=lon, method="linear")
 
@@ -115,7 +132,7 @@ def ERA5_interpolation(csv_file):
     return csv_file
 
 
-outpath = "/mnt/f/ERA5_ship/add_ERA5_interpolation/"
+outpath = "/mnt/f/ERA5_ship/add_ERA5_interpolation_beijing_time/"
 
 for fff in file_list:
     print(f"Processing file: {fff}")
@@ -123,6 +140,14 @@ for fff in file_list:
         continue
     
     input_file = pd.read_csv(path_ship + fff, encoding='gb2312')
+    input_file = input_file.rename(columns=lambda x: re.sub(r'\(.*\)', '', x))
+    #print(input_file.columns)
+    
+    # === 新增判断：如果经度列没有负值，跳过 ===
+    if not (input_file['经度'] < 0).any():
+        print(f"  -> 文件 {fff} 不含负经度，跳过插值。")
+        continue
 
     output_file = ERA5_interpolation(input_file)
     output_file.to_csv(os.path.join(outpath, fff), index=False, encoding='gb2312')
+    print(f"  -> 文件 {fff} 已完成插值并保存。")
