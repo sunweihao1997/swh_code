@@ -12,7 +12,8 @@ def cal_index_for_stock(stock_num, start_date, end_date):
     """
     # Get historical data for the stock
     df = ak.stock_zh_a_hist(symbol=stock_num, start_date=start_date, end_date=end_date, adjust="qfq")
-    if len(df) < 365:
+    print(f"Data length for {stock_num}: {len(df)}")
+    if len(df) < 200:
         return None
     else:
         df.to_excel(f"/home/ubuntu/stock_data/stock_price_single/{stock_num}.xlsx", index=False)
@@ -104,10 +105,10 @@ def cal_index_for_stock_hk(stock_num, start_date, end_date):
     """
     # Get historical data for the stock
     df = ak.stock_hk_hist(symbol=stock_num, period="daily", start_date=start_date, end_date=end_date, adjust="qfq")
-    if len(df) < 365:
+    if len(df) < 200:
         return None
     else:
-        df.to_excel(f"/home/ubuntu/stock_data/stock_price_single_hk/{stock_num}.xlsx", index=False)
+        df.to_excel(f"/home/ubuntu/stock_data/stock_price_single/HK_{stock_num}.xlsx", index=False)
         
         # Calculate CCI
         df['CCI'] = ta.cci(high=df['最高'], low=df['最低'], close=df['收盘'], length=14)

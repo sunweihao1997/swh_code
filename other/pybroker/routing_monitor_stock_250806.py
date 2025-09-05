@@ -43,8 +43,8 @@ def run_scripts():
         f.write(f"\n=== [{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}] Finished ===\n")
 
 # 设置调度
-schedule.every().tuesday.at("02:00").do(run_scripts)
-schedule.every().thursday.at("02:00").do(run_scripts)
+# 设置调度：每天 12:00 运行
+schedule.every().day.at("09:15").do(run_scripts)
 
 print("Scheduler is running... (Press Ctrl+C to stop)")
 

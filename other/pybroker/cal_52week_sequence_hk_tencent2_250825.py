@@ -32,7 +32,7 @@ spot_df = pd.read_excel(f"/home/ubuntu/stock_data/all_stock_realtime/HK_real_tim
 sorted_df = spot_df.sort_values(by="成交量", ascending=False)
 
 # 取前1000个
-top1000_df = sorted_df.head(1000)
+top1000_df = sorted_df.head(1000).copy()
 
 
 percentile_list = []

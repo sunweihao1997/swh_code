@@ -12,16 +12,20 @@ import os
 import numpy as np
 
 sys.path.append("/home/ubuntu/swh_code/module/")
-from module_stock import cal_index_for_stock, standardize_and_normalize, map_df
+from module_stock import cal_index_for_stock_hk, standardize_and_normalize, map_df, cal_index_for_stock
 
 
-def cal_base_index(code, start_date, end_date):
+def cal_base_index(code, start_date, end_date, is_hk):
     # 1. Get the fundamental data
-    df_a = cal_index_for_stock(code, start_date, end_date)
+    if is_hk:
+        df_a = cal_index_for_stock_hk(code, start_date, end_date)
+    else:
+        df_a = cal_index_for_stock(code, start_date, end_date)
 
     if df_a is None:
         return None
-    elif len(df_a) < 365:
+    elif len(df_a) < 200:
+        print(f"Data length for {code} is less than 200. Actual length: {len(df_a)}")
         return None
 
     # 2. Slope of the 10-day CCI

@@ -43,12 +43,13 @@ def run_scripts():
         f.write(f"\n=== [{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}] Finished ===\n")
 
 # 设置调度
-schedule.every().monday.at("02:00").do(run_scripts)
-schedule.every().wednesday.at("02:00").do(run_scripts)
-schedule.every().friday.at("02:00").do(run_scripts)
+#schedule.every().day.at("14:00").do(run_scripts)
+#schedule.every().wednesday.at("02:00").do(run_scripts)
+#schedule.every().friday.at("02:00").do(run_scripts)
 
-print("Scheduler is running... (Press Ctrl+C to stop)")
+#print("Scheduler is running... (Press Ctrl+C to stop)")
 
-while True:
-    schedule.run_pending()
-    time.sleep(30)
+#while True:
+#    schedule.run_pending()
+#    time.sleep(30)
+run_scripts()
