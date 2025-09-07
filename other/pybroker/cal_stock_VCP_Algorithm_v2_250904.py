@@ -1,8 +1,7 @@
 '''
 20250902
 This script is to calculate the ACP shrinking pattern for stocks
-'''
-"""
+
 VCP detection with no-lookahead flags
 2025-09-04
 
@@ -16,8 +15,7 @@ VCP detection with no-lookahead flags
 依赖
 ----
 pandas, numpy
-"""
-
+'''
 from __future__ import annotations
 from typing import List, Tuple, Optional, Union, Dict
 import numpy as np
