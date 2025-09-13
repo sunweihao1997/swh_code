@@ -27,9 +27,9 @@ def ensure_datetime_index(df: pd.DataFrame) -> pd.DataFrame:
     """确保索引是 DatetimeIndex，去重并排序。"""
     _df = df.copy()
     if not isinstance(_df.index, pd.DatetimeIndex):                    #isinstance 是 Python 内置函数，用来判断一个对象是不是某个类型（或某些类型之一）的实例。
-        if "Date" in _df.columns:
-            _df["Date"] = pd.to_datetime(_df["Date"], errors="coerce") # 把 _df["Date"] 这一列转换成 pandas 的日期时间类型 (datetime64[ns]) ; errors="coerce" 的意思是如果转换失败就设置为 NaT (Not a Time)，而不是报错。
-            _df = _df.dropna(subset=["Date"]).set_index("Date")
+        if "date" in _df.columns:
+            _df["date"] = pd.to_datetime(_df["date"], errors="coerce") # 把 _df["Date"] 这一列转换成 pandas 的日期时间类型 (datetime64[ns]) ; errors="coerce" 的意思是如果转换失败就设置为 NaT (Not a Time)，而不是报错。
+            _df = _df.dropna(subset=["date"]).set_index("date")
         else:
             raise ValueError("DataFrame 需要 DatetimeIndex 或包含 'Date' 列")
     _df = _df[~_df.index.duplicated(keep="last")].sort_index()
@@ -37,7 +37,7 @@ def ensure_datetime_index(df: pd.DataFrame) -> pd.DataFrame:
 
 
 def atr_wilder(df: pd.DataFrame, n: int = 20) -> pd.Series:
-    h, l, c = df["High"].astype(float), df["Low"].astype(float), df["Close"].astype(float)
+    h, l, c = df["high"].astype(float), df["low"].astype(float), df["close"].astype(float)
     tr = pd.concat([(h - l), (h - c.shift()).abs(), (l - c.shift()).abs()], axis=1).max(axis=1)
     atr = tr.ewm(alpha=1/n, adjust=False).mean()  # Wilder's smoothing
     return atr.rename(f"ATR{n}")
@@ -52,7 +52,7 @@ def find_swings(df: pd.DataFrame, window: int = 5) -> pd.DataFrame:
     注意：center=True 会依赖“未来”K根数据，务必在后续统一延迟 half=window//2 进行确认！
     """
     df = ensure_datetime_index(df)
-    hi, lo = df["High"], df["Low"]
+    hi, lo = df["high"], df["low"]
     is_high = hi.eq(hi.rolling(window=window, center=True).max())
     is_low  = lo.eq(lo.rolling(window=window, center=True).min())
     swings = pd.DataFrame(
@@ -70,7 +70,7 @@ def find_swings_zigzag(
     threshold: float = 0.05,
     *,
     mode: str = "percent",           # "percent" 或 "abs"
-    use_high_low: bool = True,       # True: 用 High/Low 做极值；False: 仅用 Close
+    use_high_low: bool = True,       # True: 用 high/low 做极值；False: 仅用 close
     include_last: bool = False       # 是否把最后一个候选拐点也输出为 swing（未被反向确认）
 ) -> pd.DataFrame:
     """
@@ -81,15 +81,15 @@ def find_swings_zigzag(
     参数
     ----
     df : DataFrame，需要包含列：
-         - 必需: "Close"
-         - 可选: "High", "Low"（当 use_high_low=True 时使用）
+         - 必需: "close"
+         - 可选: "high", "low"（当 use_high_low=True 时使用）
     threshold : float
          - 当 mode="percent" 时，表示比例阈值（如 0.05 表示 5%）
          - 当 mode="abs" 时，表示绝对点数阈值（如 2.0 表示 2 元）
     mode : {"percent", "abs"}
     use_high_low : bool
-         - True：用 High/Low 作为即时极值（推荐，转折更稳健）
-         - False：仅用 Close 价格判定
+         - True：用 high/low 作为即时极值（推荐，转折更稳健）
+         - False：仅用 close 价格判定
     include_last : bool
          - True：在序列结束时输出最后一个候选极值为 swing（可能未被反向确认）
 
@@ -100,11 +100,11 @@ def find_swings_zigzag(
         - swing_low : 在被确认的波谷位置给出价格，否则为 NaN
     """
     # --- 预处理 ---
-    if "Close" not in df.columns:
-        raise ValueError("DataFrame 必须包含 'Close' 列。")
-    price_h = df["High"] if (use_high_low and "High" in df.columns) else df["Close"]
-    price_l = df["Low"]  if (use_high_low and "Low"  in df.columns) else df["Close"]
-    close = df["Close"]
+    if "close" not in df.columns:
+        raise ValueError("DataFrame 必须包含 'close' 列。")
+    price_h = df["high"] if (use_high_low and "high" in df.columns) else df["close"]
+    price_l = df["low"]  if (use_high_low and "low"  in df.columns) else df["close"]
+    close = df["close"]
 
     n = len(df)
     if n == 0:
@@ -513,7 +513,7 @@ if __name__ == "__main__":
     low  = close - rng.normal(0.5, 0.3, size=len(idx)).clip(min=0)
     vol  = (rng.lognormal(mean=12, sigma=0.2, size=len(idx))).astype(int)
 
-    df_demo = pd.DataFrame({"Open": close, "High": high, "Low": low, "Close": close, "Volume": vol}, index=idx)
+    df_demo = pd.DataFrame({"Open": close, "high": high, "low": low, "close": close, "Volume": vol}, index=idx)
 
     # 运行无前视 VCP（ATR 自适应 low_tol 举例：至少高出 0.5 * ATR20）
     res = vcp_flags_no_lookahead(
