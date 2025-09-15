@@ -11,6 +11,7 @@ from sklearn.linear_model import LinearRegression
 from concurrent.futures import ThreadPoolExecutor, as_completed
 import sys
 import os
+import time
 
 sys.path.append("/home/ubuntu/swh_code/module/")
 from module_stock import cal_index_for_stock, standardize_and_normalize, map_df
@@ -19,7 +20,7 @@ sys.path.append("/home/ubuntu/swh_code/other/pybroker/")
 from module_index_calculation import cal_base_index
 
 end_date = datetime.today().strftime("%Y%m%d")
-start_date = (datetime.today() - timedelta(days=365*5)).strftime("%Y%m%d")
+start_date = (datetime.today() - timedelta(days=365*2)).strftime("%Y%m%d")
 
 # =============== Screening Stocks ===============
 
@@ -43,10 +44,10 @@ for index, row in spot_df.iterrows():
     name = row['名称']
 
     print(f"Processing {code} - {name}...")
-    testa = cal_base_index(code, start_date, end_date)
+    testa = cal_base_index(code, start_date, end_date, is_hk=True)
 
     if testa is None:
-        print(f"Skipping {code} - {name} due to insufficient data.")
+        print(f"Skipping {code} - {name} due to insufficient data. " )
         continue
 
     if testa['cross_last7'].iloc[-1]:

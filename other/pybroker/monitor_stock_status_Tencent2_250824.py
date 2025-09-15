@@ -11,6 +11,7 @@ from sklearn.linear_model import LinearRegression
 from concurrent.futures import ThreadPoolExecutor, as_completed
 import sys
 import os
+import time
 
 sys.path.append("/home/ubuntu/swh_code/module/")
 from module_stock import cal_index_for_stock, standardize_and_normalize, map_df
@@ -43,7 +44,7 @@ for index, row in spot_df.iterrows():
     name = row['名称']
 
     print(f"Processing {code} - {name}...")
-    testa = cal_base_index(code, start_date, end_date)
+    testa = cal_base_index(code, start_date, end_date, is_hk=False)
 
     if testa is None:
         print(f"Skipping {code} - {name} due to insufficient data.")
