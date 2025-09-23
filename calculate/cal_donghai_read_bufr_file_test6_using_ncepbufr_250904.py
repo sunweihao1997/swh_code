@@ -40,8 +40,9 @@ times, lats, lons, wdir, wspd, u_s, v_s = [], [], [], [], [], [], []
 bufr = ncepbufr.open(BUFR_FILE)
 
 while bufr.advance() == 0:
+    print(bufr.msg_date)
     # 消息参考时间（YYYYMMDDHH）
-    ref_time = datetime.strptime(str(bufr.msg_date), "%Y%m%d%H")
+    #ref_time = datetime.strptime(str(bufr.msg_date), "%Y%m%d%H")
 
     while bufr.load_subset() == 0:
         # 经纬度：在候选里找
@@ -98,80 +99,81 @@ bufr.close()
 # ... 你的前半部分保持不变，到生成 ds 为止 ...
 
 # 组织成 xarray Dataset（单维度：obs）
-obs = np.arange(len(times), dtype="int64")
-ds = xr.Dataset(
-    data_vars=dict(
-        lat=("obs", np.array(lats, dtype="float32")),
-        lon=("obs", np.array(lons, dtype="float32")),
-        wdir=("obs", np.array(wdir, dtype="float32")),
-        wspd=("obs", np.array(wspd, dtype="float32")),
-        u=("obs", np.array(u_s, dtype="float32")),
-        v=("obs", np.array(v_s, dtype="float32")),
-    ),
-    coords=dict(
-        obs=("obs", obs),
-        time=("obs", np.array(times, dtype="datetime64[ns]")),
-    ),
-    attrs=dict(
-        title="Atmospheric Motion Vectors decoded from BUFR",
-        source="BUFR via NCEPLIBS-bufr (ncepbufr)",
-        history="created by bufr_to_netcdf.py",
-        Conventions="CF-1.8",
-    ),
-)
-
-# === 新增：格点化 ===
-import numpy as np
-from scipy.stats import binned_statistic_2d
-
-# 设定目标网格（例如 1°×1°）
-lat_edges = np.arange(-90, 90.1, 1.0)
-lon_edges = np.arange(0, 360.1, 1.0)
-
-# 把经度统一到 [0,360)
-lons_arr = np.array(lons) % 360
-lats_arr = np.array(lats)
-u_arr    = np.array(u_s)
-v_arr    = np.array(v_s)
-
-# 分别对 u、v 做 2D binning 平均
-u_grid, _, _, _ = binned_statistic_2d(
-    lats_arr, lons_arr, u_arr, statistic="mean", bins=[lat_edges, lon_edges]
-)
-v_grid, _, _, _ = binned_statistic_2d(
-    lats_arr, lons_arr, v_arr, statistic="mean", bins=[lat_edges, lon_edges]
-)
-
-# 计算格点中心
-lat_centers = 0.5 * (lat_edges[:-1] + lat_edges[1:])
-lon_centers = 0.5 * (lon_edges[:-1] + lon_edges[1:])
-
-# 存成新的 Dataset
-ds_grid = xr.Dataset(
-    data_vars=dict(
-        u=(("lat", "lon"), u_grid.astype("float32")),
-        v=(("lat", "lon"), v_grid.astype("float32")),
-    ),
-    coords=dict(
-        lat=lat_centers.astype("float32"),
-        lon=lon_centers.astype("float32"),
-    ),
-    attrs=dict(
-        title="Gridded AMV wind field (bin-averaged)",
-        source="point observations aggregated to grid",
-    ),
-)
-
-# === 原始点集保存 ===
-encoding = {name: {"zlib": True, "complevel": 4, "dtype": "float32"} 
-            for name in ["lat","lon","wdir","wspd","u","v"]}
-encoding["time"] = {"zlib": True, "complevel": 4}
-ds.to_netcdf(OUT_NC, format="NETCDF4", encoding=encoding)
-
-# === 格点化结果保存 ===
-ds_grid.to_netcdf("amv_grid.nc", format="NETCDF4", 
-                  encoding={"u": {"zlib": True, "complevel": 4},
-                            "v": {"zlib": True, "complevel": 4}})
-
-print(f"OK -> {OUT_NC}, obs={ds.dims['obs']}")
-print(f"OK -> amv_grid.nc, shape={ds_grid['u'].shape}")
+#obs = np.arange(len(times), dtype="int64")
+#ds = xr.Dataset(
+#    data_vars=dict(
+#        lat=("obs", np.array(lats, dtype="float32")),
+#        lon=("obs", np.array(lons, dtype="float32")),
+#        wdir=("obs", np.array(wdir, dtype="float32")),
+#        wspd=("obs", np.array(wspd, dtype="float32")),
+#        u=("obs", np.array(u_s, dtype="float32")),
+#        v=("obs", np.array(v_s, dtype="float32")),
+#    ),
+#    coords=dict(
+#        obs=("obs", obs),
+#        time=("obs", np.array(times, dtype="datetime64[ns]")),
+#    ),
+#    attrs=dict(
+#        title="Atmospheric Motion Vectors decoded from BUFR",
+#        source="BUFR via NCEPLIBS-bufr (ncepbufr)",
+#        history="created by bufr_to_netcdf.py",
+#        Conventions="CF-1.8",
+#    ),
+#)
+#
+## === 新增：格点化 ===
+#import numpy as np
+#from scipy.stats import binned_statistic_2d
+#
+## 设定目标网格（例如 1°×1°）
+#lat_edges = np.arange(-90, 90.1, 1.0)
+#lon_edges = np.arange(0, 360.1, 1.0)
+#
+## 把经度统一到 [0,360)
+#lons_arr = np.array(lons) % 360
+#lats_arr = np.array(lats)
+#u_arr    = np.array(u_s)
+#v_arr    = np.array(v_s)
+#
+## 分别对 u、v 做 2D binning 平均
+#u_grid, _, _, _ = binned_statistic_2d(
+#    lats_arr, lons_arr, u_arr, statistic="mean", bins=[lat_edges, lon_edges]
+#)
+#v_grid, _, _, _ = binned_statistic_2d(
+#    lats_arr, lons_arr, v_arr, statistic="mean", bins=[lat_edges, lon_edges]
+#)
+#
+## 计算格点中心
+#lat_centers = 0.5 * (lat_edges[:-1] + lat_edges[1:])
+#lon_centers = 0.5 * (lon_edges[:-1] + lon_edges[1:])
+#
+## 存成新的 Dataset
+#ds_grid = xr.Dataset(
+#    data_vars=dict(
+#        u=(("lat", "lon"), u_grid.astype("float32")),
+#        v=(("lat", "lon"), v_grid.astype("float32")),
+#    ),
+#    coords=dict(
+#        lat=lat_centers.astype("float32"),
+#        lon=lon_centers.astype("float32"),
+#    ),
+#    attrs=dict(
+#        title="Gridded AMV wind field (bin-averaged)",
+#        source="point observations aggregated to grid",
+#    ),
+#)
+#
+## === 原始点集保存 ===
+#encoding = {name: {"zlib": True, "complevel": 4, "dtype": "float32"} 
+#            for name in ["lat","lon","wdir","wspd","u","v"]}
+#encoding["time"] = {"zlib": True, "complevel": 4}
+#ds.to_netcdf(OUT_NC, format="NETCDF4", encoding=encoding)
+#
+## === 格点化结果保存 ===
+#ds_grid.to_netcdf("amv_grid.nc", format="NETCDF4", 
+#                  encoding={"u": {"zlib": True, "complevel": 4},
+#                            "v": {"zlib": True, "complevel": 4}})
+#
+#print(f"OK -> {OUT_NC}, obs={ds.dims['obs']}")
+#print(f"OK -> amv_grid.nc, shape={ds_grid['u'].shape}")
+#
