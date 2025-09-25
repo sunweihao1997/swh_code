@@ -16,20 +16,21 @@ import time
 import pandas_ta as ta
 
 def ensure_datetime_index(df: pd.DataFrame) -> pd.DataFrame:
-    """确保索引为 DatetimeIndex 且已排序。"""
+    """确保索引为 datetimeIndex 且已排序。"""
     if not isinstance(df.index, pd.DatetimeIndex):
-        if 'Date' in df.columns:
-            df = df.set_index(pd.to_datetime(df['Date']))
+        if 'date' in df.columns:
+            df = df.set_index(pd.to_datetime(df['date']))
         else:
-            raise ValueError("DataFrame 需要 DatetimeIndex 或包含 'Date' 列")
+            raise ValueError("DataFrame 需要 datetimeIndex 或包含 'date' 列")
     return df.sort_index()
+
 
 def atr_ta(df: pd.DataFrame, n: int = 20) -> pd.Series:
     """
     用 pandas_ta 计算 ATR(n)。返回一个与 df 对齐的 Series。
     默认列名为 'ATR_{n}'（pandas_ta 会生成 atr_{n} 的列名，我们重命名一下以统一风格）。
     """
-    out = ta.atr(high=df['High'], low=df['Low'], close=df['Close'], length=n)
+    out = ta.atr(high=df['high'], low=df['low'], close=df['close'], length=n)
     # pandas_ta 返回的列名通常是 'ATR_{n}'
     if isinstance(out, pd.Series):
         return out.rename(f'ATR{n}')
@@ -44,7 +45,7 @@ def bb_width_ta(df: pd.DataFrame, n: int = 20, std: float = 2.0) -> pd.Series:
       BBL_{n}_{std}, BBM_{n}_{std}, BBU_{n}_{std}, BBB_{n}_{std}, BBP_{n}_{std}
     其中 BBB 为带宽。
     """
-    bb = ta.bbands(close=df['Close'], length=n, std=std)
+    bb = ta.bbands(close=df['close'], length=n, std=std)
     # 兼容不同版本的列名：优先找 'BBB_*'
     if bb is None or bb.empty:
         raise RuntimeError("pandas_ta.bbands 计算失败，返回空结果")
@@ -75,7 +76,7 @@ def to_weekly(df: pd.DataFrame) -> pd.DataFrame:
     以周五为收盘重采样成周线。
     """
     df = ensure_datetime_index(df)
-    agg = {'Open': 'first', 'High': 'max', 'Low': 'min', 'Close': 'last', 'Volume': 'sum'}
+    agg = {'open': 'first', 'high': 'max', 'low': 'min', 'close': 'last', 'volume': 'sum'}
     return df.resample('W-FRI').agg(agg).dropna(how='any')
 
 
