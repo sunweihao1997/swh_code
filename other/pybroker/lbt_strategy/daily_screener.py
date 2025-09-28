@@ -72,7 +72,7 @@ def run_daily_screener():
     
     # Set the date range for fetching data (we need about a year for 252-day indicators)
     end_date = datetime.now()
-    start_date = end_date - timedelta(days=365)
+    start_date = end_date - timedelta(days=500)
     
     all_positive_hits = []
 
