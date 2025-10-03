@@ -46,4 +46,8 @@ SCREENER_LOOKBACK_DAYS = 30
 
 # The interval to pause between fetching data for each stock to avoid API blocks.
 # A random value between these two numbers will be used.
+<<<<<<< HEAD
 SLEEP_INTERVAL_SECONDS = (5, 10) 
+=======
+SLEEP_INTERVAL_SECONDS = (1, 5) 
+>>>>>>> 21fd8df (update tencent-2)
