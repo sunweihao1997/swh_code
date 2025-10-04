@@ -72,7 +72,7 @@ def run_daily_screener():
     
     # Set the date range for fetching data (we need about a year for 252-day indicators)
     end_date = datetime.now()
-    start_date = end_date - timedelta(days=365)
+    start_date = end_date - timedelta(days=500)
     
     all_positive_hits = []
 
@@ -89,7 +89,11 @@ def run_daily_screener():
             
             # Fetch data for the last year
             df = data_fetcher.fetch_stock_data(ticker, start_date.strftime('%Y-%m-%d'), end_date.strftime('%Y-%m-%d'))
-            
+<<<<<<< HEAD
+            print(len(df))
+=======
+           # print(len(df))
+>>>>>>> 21fd8df (update tencent-2)
             if df is not None and len(df) > 252:
                 # Calculate indicators and LBT scores
                 df_indicators = indicator_calculator.calculate_all_indicators(df, config)

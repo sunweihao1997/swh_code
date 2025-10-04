@@ -13,7 +13,7 @@ def main():
     # Note: Analyzing the full stock list can be very slow.
     # We limit to the first 50 stocks for a faster demonstration.
     # Remove the '[:50]' slice to run on the full market.
-    stock_list = data_fetcher.get_stock_list(config.STOCK_UNIVERSE)[:50]
+    stock_list = data_fetcher.get_stock_list(config.STOCK_UNIVERSE)
     all_data = {}
     
     print("--- Phase 1: Fetching and Processing Stock Data ---")

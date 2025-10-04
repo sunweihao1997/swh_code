@@ -1,6 +1,6 @@
 # --- Backtest Settings ---
-START_DATE = '2022-01-01'
-END_DATE = '2024-01-01'
+START_DATE = '2020-01-01'
+END_DATE = '2025-09-01'
 INITIAL_CAPITAL = 1000000
 COMMISSION_BPS = 10  # Basis points (e.g., 10 bps = 0.10%)
 STOCK_UNIVERSE = 'A-shares'  # 'A-shares' or 'HK-shares'
@@ -46,4 +46,8 @@ SCREENER_LOOKBACK_DAYS = 30
 
 # The interval to pause between fetching data for each stock to avoid API blocks.
 # A random value between these two numbers will be used.
+<<<<<<< HEAD
 SLEEP_INTERVAL_SECONDS = (5, 10) 
+=======
+SLEEP_INTERVAL_SECONDS = (1, 5) 
+>>>>>>> 21fd8df (update tencent-2)
