@@ -22,11 +22,11 @@ STATION_NAME = "QingCaoSha"
 STATION_CODE = ""              # 若无可留空
 DATE_COL = "时间"
 SAL_COL = "数值"               # 文件中的数值列名
-START = "2022-08-15 00:00:00"
+START = "2022-01-01 00:00:00"
 END   = "2022-12-31 23:59:59"
 THRESHOLD = 250                # 参考阈值（原来画的红虚线）
-OUT_PNG = "/mnt/f/wsl_plot/donghai/salinity/QingcaoSha_Chloride_20220815-20221212.png"
-OUT_PDF = "/mnt/f/wsl_plot/donghai/salinity/QingcaoSha_Chloride_20220815-20221212.pdf"
+OUT_PNG = "/mnt/f/wsl_plot/donghai/salinity/QingcaoSha_Chloride_20220101-20221231.png"
+OUT_PDF = "/mnt/f/wsl_plot/donghai/salinity/QingcaoSha_Chloride_20220101-20221231.pdf"
 # =========================================
 
 # 1) 读数据(自动兼容 Excel / CSV)
@@ -54,7 +54,7 @@ df = df.loc[mask].sort_values(DATE_COL)
 df = df.dropna(subset=[SAL_COL])
 
 # 4) 6 点平滑（居中，缺失时也能算）
-df["smooth6"] = df[SAL_COL].rolling(window=12, center=True, min_periods=1).mean()
+df["smooth6"] = df[SAL_COL].rolling(window=11, center=True, min_periods=1).mean()
 
 # 5) 计算极大值（全局最大）
 imax = int(df[SAL_COL].idxmax())
@@ -62,19 +62,19 @@ t_max = df.loc[imax, DATE_COL]
 y_max = df.loc[imax, SAL_COL]
 
 # ===================== 画图 =====================
-fig = plt.figure(figsize=(20, 8), dpi=500)
+fig = plt.figure(figsize=(14, 5.2), dpi=140)
 ax = plt.gca()
 
 # 原始曲线：连线 + 适度抽样标记点
 markevery = max(len(df) // 220, 1)
 ax.plot(df[DATE_COL], df[SAL_COL],
-        linewidth=1.2, alpha=0.85,
-        marker=".", markersize=2, markevery=markevery, color="red",
+        linewidth=1.5, alpha=1,
+        marker=".", markersize=2, markevery=markevery,
         label="Raw")
 
 # 6 点平滑曲线
 ax.plot(df[DATE_COL], df["smooth6"],
-        linewidth=1.8, alpha=0.95, color="black",
+        linewidth=1., alpha=0.8,
         label="MA(6)")
 
 # 阈值线
@@ -104,7 +104,7 @@ ax.grid(True, which="major", linestyle="--", alpha=0.28)
 ax.grid(True, which="minor", linestyle=":", alpha=0.18)
 
 # 标注全局极大值
-ax.scatter([t_max], [y_max], s=25, zorder=5)
+ax.scatter([t_max], [y_max], s=40, zorder=5)
 ax.annotate(
     f"MAX = {y_max:.0f}\n{t_max:%Y-%m-%d %H:%M}",
     xy=(t_max, y_max),
@@ -120,12 +120,12 @@ for spine in ["top", "right"]:
     ax.spines[spine].set_visible(False)
 
 title_station = f"{STATION_NAME}({STATION_CODE})" if STATION_NAME and STATION_CODE else (STATION_NAME or STATION_CODE or "Station")
-ax.set_title(f"{title_station} 2022.9.5–12.12 Chloride concentration Time Series", fontsize=15, pad=10)
-ax.set_xlabel("Time (months shown as YYYY-M)")  # 明确说明刻度格式
+ax.set_title(f"{title_station} 2022..5–12.31 Chloride concentration Time Series", fontsize=15, pad=10)
+ax.set_xlabel("Time")  # 明确说明刻度格式
 ax.set_ylabel("Chloride concentration")
 #ax.legend(frameon=False, ncol=3, loc="upper left")
 
 plt.tight_layout()
-plt.savefig(OUT_PNG, dpi=300)
+plt.savefig(OUT_PNG, dpi=500)
 plt.savefig(OUT_PDF, dpi=500)
 # plt.show()
