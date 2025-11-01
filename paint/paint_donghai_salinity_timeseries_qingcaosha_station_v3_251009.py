@@ -54,7 +54,7 @@ df = df.loc[mask].sort_values(DATE_COL)
 df = df.dropna(subset=[SAL_COL])
 
 # 4) 6 点平滑（居中，缺失时也能算）
-df["smooth6"] = df[SAL_COL].rolling(window=12, center=True, min_periods=1).mean()
+df["smooth6"] = df[SAL_COL].rolling(window=24, center=True, min_periods=1).mean()
 
 # 5) 计算极大值（全局最大）
 imax = int(df[SAL_COL].idxmax())
@@ -70,16 +70,16 @@ markevery = max(len(df) // 220, 1)
 ax.plot(df[DATE_COL], df[SAL_COL],
         linewidth=1.2, alpha=0.85,
         marker=".", markersize=2, markevery=markevery, color="red",
-        label="Raw")
+        label="Hourly")
 
 # 6 点平滑曲线
 ax.plot(df[DATE_COL], df["smooth6"],
         linewidth=1.8, alpha=0.95, color="black",
-        label="MA(6)")
+        label="Daily Smoothed")
 
 # 阈值线
 ax.axhline(y=THRESHOLD, color="red", linestyle="--",
-           linewidth=1.0, label=f"y={THRESHOLD}")
+           linewidth=1.5, label=f"y={THRESHOLD}")
 
 # —— x 轴刻度与格式：确保显示“2022-9” —— #
 # 主刻度：每月
@@ -123,7 +123,7 @@ title_station = f"{STATION_NAME}({STATION_CODE})" if STATION_NAME and STATION_CO
 ax.set_title(f"{title_station} 2022.9.5–12.12 Chloride concentration Time Series", fontsize=15, pad=10)
 ax.set_xlabel("Time (months shown as YYYY-M)")  # 明确说明刻度格式
 ax.set_ylabel("Chloride concentration")
-#ax.legend(frameon=False, ncol=3, loc="upper left")
+ax.legend(frameon=False, ncol=3, loc="upper right", fontsize=15)
 
 plt.tight_layout()
 plt.savefig(OUT_PNG, dpi=300)
