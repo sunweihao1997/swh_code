@@ -1,0 +1,9 @@
+
+Found BUFR message #      1
+
+        Message length:          54
+      Section 0 length:           8
+          BUFR edition:           3
+
+      Section 1 length:          18
+          Master table:           0

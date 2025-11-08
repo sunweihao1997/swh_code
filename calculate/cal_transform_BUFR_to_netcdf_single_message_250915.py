@@ -59,5 +59,6 @@ ds = xr.Dataset(
 )
 
 # 写出 NetCDF
-ds.to_netcdf(out_file)
-print(f"[OK] 已写出 {out_file}, 包含 {n} 条观测")
+#ds.to_netcdf(out_file)
+#print(f"[OK] 已写出 {out_file}, 包含 {n} 条观测")
+print(ds['CLAT'].data)
