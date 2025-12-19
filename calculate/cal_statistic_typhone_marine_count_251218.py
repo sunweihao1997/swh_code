@@ -7,8 +7,7 @@ import pandas as pd
 import geopandas as gpd
 from shapely.geometry import Point
 
-#def count_typhoons_by_region(ibtracs_path, marine_shp_path, output_path):
-def count_typhoons_by_region(marine_shp_path,):
+def count_typhoons_by_region(ibtracs_path, marine_shp_path, output_path):
     # 1. Read and pre-process Marine regions
     print("正在读取海区 Shapefile 数据...")
     gdf = gpd.read_file(marine_shp_path)
@@ -35,14 +34,15 @@ def count_typhoons_by_region(marine_shp_path,):
     # 2. Read and pre-process IBTrACS (台风数据)
     print("正在读取 IBTrACS 数据 (可能需要几秒钟)...")
     # low_memory=False 防止大文件读取时的类型警告
-    df_ibtracs = pd.read_csv(ibtracs_path, low_memory=False)
+    df_ibtracs = pd.read_csv(ibtracs_path, low_memory=False, skiprows=[1]) # Second lIne is unit, skip it
+
 
     use_cols   = ['SID', 'ISO_TIME', 'LAT', 'LON']
     # remove the missing line for lat and lon
     df_clean = df_ibtracs[use_cols].dropna(subset=['LAT', 'LON'])
 
     # convert the time format
-    df_clean['ISO_TIME'] = pd.to_datetime(df_clean['ISO_TIME'])
+    df_clean['ISO_TIME'] = pd.to_datetime(df_clean['ISO_TIME'], errors='coerce')
     df_clean['year'] = df_clean['ISO_TIME'].dt.year
 
     # convert to GeoDataFrame
@@ -50,12 +50,37 @@ def count_typhoons_by_region(marine_shp_path,):
     geometry = [Point(xy) for xy in zip(df_clean['LON'], df_clean['LAT'])]
     gdf_points = gpd.GeoDataFrame(df_clean, geometry=geometry, crs="EPSG:4326")
 
+    # 3. Count typhoons in each region
+    print("正在统计海区内的台风数量...")
+    joined = gpd.sjoin(gdf_points, gdf_targets[[region_col_name, 'geometry']], how="inner", predicate="within")
 
+    # Count the number of typhoons in each region
+    result = joined.groupby(['year', region_col_name])['SID'].nunique().reset_index()
+
+    # Rename to make it more readable
+    result.columns = ['Year', 'Region', 'Typhoon_Count']
+    
+    # sort the result by year and region
+    result = result.sort_values(by=['Year', 'Region'])
+
+    # Save the result to a CSV file
+    result.to_csv(output_path, index=False)
+    
+    # 为了直观，也可以转为透视表形式展示
+    pivot_table = result.pivot(index='Year', columns='Region', values='Typhoon_Count').fillna(0)
+    
+    print("-" * 30)
+    print(f"处理完成！结果已保存至: {output_path}")
+    print("部分结果预览 (透视表形式):")
+    print(pivot_table.tail(10)) # 显示最后10年
+    print("-" * 30)
 
 def main():
     shapefile_path = "/mnt/f/data/World_Seas_IHO_v3/World_Seas_IHO_v3.shp" # 建议写绝对路径，防止找不到文件
+    output_csv_path = "/mnt/f/data/typhoon_count.csv" 
+    ibtracs_csv_path = "/mnt/f/data/ibtracs.WP.list.v04r01.csv" 
 
-    count_typhoons_by_region(shapefile_path)
+    count_typhoons_by_region(ibtracs_csv_path, shapefile_path, output_csv_path)
 
 if __name__ == '__main__':
     main()
