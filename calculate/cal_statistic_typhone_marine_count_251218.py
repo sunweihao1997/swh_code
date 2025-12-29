@@ -76,9 +76,9 @@ def count_typhoons_by_region(ibtracs_path, marine_shp_path, output_path):
     print("-" * 30)
 
 def main():
-    shapefile_path = "/mnt/f/data/World_Seas_IHO_v3/World_Seas_IHO_v3.shp" # 建议写绝对路径，防止找不到文件
-    output_csv_path = "/mnt/f/data/typhoon_count.csv" 
-    ibtracs_csv_path = "/mnt/f/data/ibtracs.WP.list.v04r01.csv" 
+    shapefile_path = "/home/sun/data/download_data/World_Seas_IHO_v3/World_Seas_IHO_v3.shp" # 建议写绝对路径，防止找不到文件
+    output_csv_path = "/home/sun/data/process/analysis/typhoon_prediction/typhoon_count.csv" 
+    ibtracs_csv_path = "/home/sun/data/download_data/IBTRACS_typhoon/ibtracs.WP.list.v04r01.csv" 
 
     count_typhoons_by_region(ibtracs_csv_path, shapefile_path, output_csv_path)
 
