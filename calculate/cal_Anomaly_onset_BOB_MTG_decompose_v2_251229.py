@@ -9,7 +9,7 @@ import sys
 from scipy.signal import butter, filtfilt
 
 #  1. Read the File
-f0_mtg = xr.open_dataset("/home/sun/data/monsoon_onset_anomaly_analysis/process/ERA5_daily_MTG_series_BOB_1940_2022.nc")
+f0_mtg = xr.open_dataset("/home/sun/wd_14/data_beijing/monsoon_onset_anomaly_analysis/process/ERA5_daily_MTG_series_BOB_1940_2022.nc")
 
 # =============== Filtering Functions ===================
 def highpass_filter(data, cutoff, fs, order=4):
@@ -95,7 +95,7 @@ coords={
 )
 
 # ============= 3. Allocate the early and late onset years ===============
-onset_file = xr.open_dataset("/home/sun/data/monsoon_onset_anomaly_analysis/onset_day_data/ERA5_onset_day_include_early_late_years_new.nc")
+onset_file = xr.open_dataset("/home/sun/wd_14/data_beijing/monsoon_onset_anomaly_analysis/onset_day_data/ERA5_onset_day_include_early_late_years_new.nc")
 ncfile_all = ncfile.sel(year=onset_file.year.data)
 ncfile_ear = ncfile.sel(year=onset_file.year_early.data)
 ncfile_lat = ncfile.sel(year=onset_file.year_late.data)
@@ -111,10 +111,10 @@ date_axi = np.linspace(1, 365, 365)
 
 avg_time   = int(np.average(onset_file['onset_day_early'])) ; interval = 50 ; print(f"The average of the early onset is {avg_time}")
 start_time = avg_time - interval ; end_time = avg_time + interval
-ax.plot(np.linspace(-1*interval, 1*interval, 2*interval), np.average(ncfile_ear['lowpass_MTG'].data, axis=0)[start_time:end_time],  label='71-day lowpass filter', color='blue', lw=2)
-ax.plot(np.linspace(-1*interval, 1*interval, 2*interval), np.average(ncfile_ear['bandpass_MTG'].data, axis=0)[start_time:end_time], label='21-70-day bandpass filter', color='red', lw=2)
-ax.plot(np.linspace(-1*interval, 1*interval, 2*interval), np.average(ncfile_ear['highpass_MTG'].data, axis=0)[start_time:end_time], label='20-day highpass filter', color='green', lw=2)
-ax.plot(np.linspace(-1*interval, 1*interval, 2*interval), np.average(ncfile_ear['original_MTG'].data, axis=0)[start_time:end_time], label='20-day highpass filter', color='black', lw=2)
+ax.plot(np.linspace(-1*interval, 1*interval, 2*interval), np.average(ncfile_ear['lowpass_MTG'].data, axis=0)[start_time:end_time],  label='71-day lowpass', color='blue', lw=2)
+ax.plot(np.linspace(-1*interval, 1*interval, 2*interval), np.average(ncfile_ear['bandpass_MTG'].data, axis=0)[start_time:end_time], label='21-70-day bandpass', color='red', lw=2)
+ax.plot(np.linspace(-1*interval, 1*interval, 2*interval), np.average(ncfile_ear['highpass_MTG'].data, axis=0)[start_time:end_time], label='20-day highpass', color='green', lw=2)
+ax.plot(np.linspace(-1*interval, 1*interval, 2*interval), np.average(ncfile_ear['original_MTG'].data, axis=0)[start_time:end_time], label='Original MTG', color='black', lw=2)
 
 ax.plot([-1*interval, 1*interval], [0, 0], 'k--', lw=0.75)
 
@@ -132,19 +132,19 @@ ax.tick_params(axis='x', labelsize=17.5, labelcolor='k')
 ax.tick_params(axis='y', labelsize=17.5, labelcolor='k')
 
 
-plt.savefig('/home/sun/paint/monsoon_onset_composite_ERA5/Article_Anomaly_ISO_v2_fig1_decomposed_mtg_early_onset.pdf')
+plt.savefig('/home/sun/paint/CD/response/Article_Anomaly_ISO_v3_fig1_decomposed_mtg_early_onset.pdf')
 
 # 4.2 Normal onset situation
-fig, ax = plt.subplots(figsize=(10, 8))
+fig, ax = plt.subplots(figsize=(15, 8))
 
 date_axi = np.linspace(1, 365, 365)
 
-avg_time   = int(np.average(onset_file['onset_day'])) ; interval = 25 ; print(f"The average of the normal onset is {avg_time}")
+avg_time   = int(np.average(onset_file['onset_day'])) ; interval = 50 ; print(f"The average of the normal onset is {avg_time}")
 start_time = avg_time - interval - 3 ; end_time = avg_time + interval - 3
-ax.plot(np.linspace(-1*interval, 1*interval, 2*interval), np.average(ncfile_all['lowpass_MTG'].data, axis=0)[start_time:end_time],  label='71-day lowpass filter', color='blue', lw=2)
-ax.plot(np.linspace(-1*interval, 1*interval, 2*interval), np.average(ncfile_all['bandpass_MTG'].data, axis=0)[start_time:end_time], label='21-70-day bandpass filter', color='red', lw=2)
-ax.plot(np.linspace(-1*interval, 1*interval, 2*interval), np.average(ncfile_all['highpass_MTG'].data, axis=0)[start_time:end_time], label='20-day highpass filter', color='green', lw=2)
-ax.plot(np.linspace(-1*interval, 1*interval, 2*interval), np.average(ncfile_all['original_MTG'].data, axis=0)[start_time:end_time], label='20-day highpass filter', color='black', lw=2)
+ax.plot(np.linspace(-1*interval, 1*interval, 2*interval), np.average(ncfile_all['lowpass_MTG'].data, axis=0)[start_time:end_time],  label='71-day lowpass', color='blue', lw=2)
+ax.plot(np.linspace(-1*interval, 1*interval, 2*interval), np.average(ncfile_all['bandpass_MTG'].data, axis=0)[start_time:end_time], label='21-70-day bandpass', color='red', lw=2)
+ax.plot(np.linspace(-1*interval, 1*interval, 2*interval), np.average(ncfile_all['highpass_MTG'].data, axis=0)[start_time:end_time], label='20-day highpass', color='green', lw=2)
+ax.plot(np.linspace(-1*interval, 1*interval, 2*interval), np.average(ncfile_all['original_MTG'].data, axis=0)[start_time:end_time], label='Original MTG', color='black', lw=2)
 
 ax.plot([-1*interval, 1*interval], [0, 0], 'k--', lw=0.75)
 
@@ -162,19 +162,19 @@ ax.tick_params(axis='x', labelsize=17.5, labelcolor='k')
 ax.tick_params(axis='y', labelsize=17.5, labelcolor='k')
 
 
-plt.savefig('/home/sun/paint/monsoon_onset_composite_ERA5/Article_Anomaly_ISO_v2_fig1_decomposed_mtg_normal_onset.pdf')
+plt.savefig('/home/sun/paint/CD/response/Article_Anomaly_ISO_v3_fig1_decomposed_mtg_normal_onset.pdf')
 
 # 4.3 Late onset situation
-fig, ax = plt.subplots(figsize=(10, 8))
+fig, ax = plt.subplots(figsize=(15, 8))
 
 date_axi = np.linspace(1, 365, 365)
 
-avg_time   = int(np.average(onset_file['onset_day_late'])) ; interval = 25 ; print(f"The average of the late onset is {avg_time}")
+avg_time   = int(np.average(onset_file['onset_day_late'])) ; interval = 50 ; print(f"The average of the late onset is {avg_time}")
 start_time = avg_time - interval - 3 ; end_time = avg_time + interval -3
-ax.plot(np.linspace(-1*interval, 1*interval, 2*interval), np.average(ncfile_lat['lowpass_MTG'].data, axis=0)[start_time:end_time],  label='71-day lowpass filter', color='blue', lw=2)
-ax.plot(np.linspace(-1*interval, 1*interval, 2*interval), np.average(ncfile_lat['bandpass_MTG'].data, axis=0)[start_time:end_time], label='21-70-day bandpass filter', color='red', lw=2)
-ax.plot(np.linspace(-1*interval, 1*interval, 2*interval), np.average(ncfile_lat['highpass_MTG'].data, axis=0)[start_time:end_time], label='20-day highpass filter', color='green', lw=2)
-ax.plot(np.linspace(-1*interval, 1*interval, 2*interval), np.average(ncfile_lat['original_MTG'].data, axis=0)[start_time:end_time], label='20-day highpass filter', color='black', lw=2)
+ax.plot(np.linspace(-1*interval, 1*interval, 2*interval), np.average(ncfile_lat['lowpass_MTG'].data, axis=0)[start_time:end_time],  label='71-day lowpass', color='blue', lw=2)
+ax.plot(np.linspace(-1*interval, 1*interval, 2*interval), np.average(ncfile_lat['bandpass_MTG'].data, axis=0)[start_time:end_time], label='21-70-day bandpass', color='red', lw=2)
+ax.plot(np.linspace(-1*interval, 1*interval, 2*interval), np.average(ncfile_lat['highpass_MTG'].data, axis=0)[start_time:end_time], label='20-day highpass', color='green', lw=2)
+ax.plot(np.linspace(-1*interval, 1*interval, 2*interval), np.average(ncfile_lat['original_MTG'].data, axis=0)[start_time:end_time], label='Original MTG', color='black', lw=2)
 
 ax.plot([-1*interval, 1*interval], [0, 0], 'k--', lw=0.75)
 
@@ -192,7 +192,7 @@ ax.tick_params(axis='x', labelsize=17.5, labelcolor='k')
 ax.tick_params(axis='y', labelsize=17.5, labelcolor='k')
 
 
-plt.savefig('/home/sun/paint/monsoon_onset_composite_ERA5/Article_Anomaly_ISO_v2_fig1_decomposed_mtg_late_onset.pdf')
+plt.savefig('/home/sun/paint/CD/response/Article_Anomaly_ISO_v3_fig1_decomposed_mtg_late_onset.pdf')
 
 # Added function: calculating the contribution 
 print(np.average(ncfile_lat['original_MTG'].data, axis=0)[avg_time-5-3:avg_time+5-3]) # 0.67

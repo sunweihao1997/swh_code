@@ -1,0 +1,5 @@
+,sharpe_ratio,sharpe_ratio,sharpe_ratio,sharpe_ratio,annualized_return,annualized_return,annualized_return,annualized_return,max_drawdown,max_drawdown,excess_return,excess_return
+,mean,std,min,max,mean,std,min,max,mean,min,mean,std
+period_years,,,,,,,,,,,,
+10,0.2612,0.0727,0.0873,0.4027,0.0371,0.0056,0.0252,0.0503,-0.1021,-0.1511,-0.0125,0.0056
+20,-0.0477,0.0389,-0.1855,0.0358,0.0158,0.0032,0.0058,0.0239,-0.3189,-0.3659,-0.0617,0.0032

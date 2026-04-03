@@ -44,5 +44,5 @@ def download_era5(year):
     client = cdsapi.Client()
     client.retrieve(dataset, request, "ERA5_monnthly_pressure.0.5x0.5." + str(int(year)) + ".nc")
 
-for i in range(2014, 2026):
+for i in range(1940, 1981):
     download_era5(i)
