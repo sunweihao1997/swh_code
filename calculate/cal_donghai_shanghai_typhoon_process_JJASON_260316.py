@@ -204,11 +204,16 @@ def parse_cma_best_track(file_path: str):
     tracks_df["grade_name"] = tracks_df["grade_code"].map(grade_map)
 
     # 过程最大级别
+    intensity_codes = [0, 1, 2, 3, 4, 5, 6]
+
+    # 先过滤掉 9（变性），再计算每个过程的最大强度
     max_grade = (
-        tracks_df.groupby("storm_index")["grade_code"]
+        tracks_df[tracks_df["grade_code"].isin(intensity_codes)]
+        .groupby("storm_index")["grade_code"]
         .max()
         .rename("max_grade_code")
     )
+    
     storms_df = storms_df.merge(max_grade, on="storm_index", how="left")
     storms_df["max_grade_name"] = storms_df["max_grade_code"].map(grade_map)
 
